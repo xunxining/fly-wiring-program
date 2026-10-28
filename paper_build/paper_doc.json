@@ -1,0 +1,807 @@
+{
+ "body": [
+  {
+   "kind": "title",
+   "text": "The wiring program of a fly brain"
+  },
+  {
+   "kind": "authors",
+   "text": "Xining Xun¹, Hang Fan²,*, Tianyi Hao¹"
+  },
+  {
+   "kind": "meta",
+   "text": "¹Tsingjiao Information Science (Beijing) Co., Ltd., Beijing, China\n²School of Economics and Management, North China Electric Power University, China"
+  },
+  {
+   "kind": "meta",
+   "text": "*Corresponding author: Hang Fan (ORCID: 0000-0002-8308-9332, https://orcid.org/0000-0002-8308-9332; email: fanhang@ncepu.edu.cn). X.X. ORCID: 0009-0001-8492-4758 (https://orcid.org/0009-0001-8492-4758)."
+  },
+  {
+   "kind": "abstract",
+   "text": "Two complete central nervous systems of one species—the male (MaleCNS) and the female (FlyWire FAFB) Drosophila—invite a question beyond the wiring diagram itself: what program writes such a graph? Here we reverse-engineer the male connectome into an executable wiring program: a short list of wiring rules, each admitted only after a pre-specified prediction survived a quantitative test. The program reproduces both connectomes’ edge counts and out-degree sequences exactly (by construction), matches edge-distance profiles and predicts held-out edges above chance. The compass kernel’s amplitude matrix agrees across sexes at r = 0.984, whereas its instantiation noise does not. A conserved excess of triadic closure is not an independent wiring term but emerges from quota-constrained local assembly with stereotyped per-type-pair offsets, to which true retinotopic coordinates add little (≤0.018). Exact per-cell degree execution holds in both sexes, yet the budgets cannot yet be derived from developmental annotations—a registered failure we report. The program ports across sexes with its deterministic skeleton intact, and its execution skeleton replicates in a third, independently reconstructed connectome—including its sex-reversed Δ7 compass coupling; direct parameter transfer covers 41%/36% of homologous vocabularies, locating where the grammar by which genomes write brains remains incomplete."
+  },
+  {
+   "kind": "p",
+   "text": "Connectomics has produced wiring diagrams of the adult female fly brain⟨⟨1,3⟩⟩ and its cell-type census⟨⟨4⟩⟩, network statistics⟨⟨5⟩⟩, visual system⟨⟨6,7⟩⟩, nerve cords of both sexes⟨⟨8,9⟩⟩, the larval brain⟨⟨10⟩⟩, and, most recently, the complete male central nervous system⟨⟨2⟩⟩. These resources are descriptive: they record what is connected to what. The complementary question, what program writes such a graph, has so far been pursued mainly through statistical generative models, from small-world and preferential-attachment networks⟨⟨11,12⟩⟩ to geometric and homophily-based models of cortical connectomes⟨⟨13–15⟩⟩ within the broader frame of network neuroscience⟨⟨16⟩⟩. Such models match a handful of summary statistics but stop short of the connectome itself: they neither reproduce the edge list of a specific brain nor support counterfactual generation, such as scaling a brain up or asking what changes between sexes."
+  },
+  {
+   "kind": "p",
+   "text": "Here we take the reverse-engineering stance literally. Given the male fly central nervous system (CNS) connectome⟨⟨2⟩⟩, we ask for the shortest executable program whose output is statistically indistinguishable from the data under an explicit battery of tests, and we then ask whether the same program, re-parameterized only from the female census, generates the female brain⟨⟨1,4⟩⟩. The approach differs from classical generative modelling in three ways. First, exactness is the standard: the program executes a type-pair quota table deterministically and reproduces the out-degree distributions of both sexes by construction. Second, mechanism discovery is falsification-driven: each module was admitted only after a specific pre-registered prediction survived, and seven mechanism families were rejected for the hardest statistic—triadic closure—before an eighth closed it. Third, cross-individual transfer is the validation: the architecture learned on one sex was frozen and every parameter re-derived from the other alone. The approach yields two kinds of output, and we treat the second as the more valuable: invariants, the rules the program must contain in both sexes; and residuals, the statistics no tested mechanism explains, which localize quantitatively where the current picture of brain wiring is incomplete."
+  },
+  {
+   "kind": "h2",
+   "text": "A falsification-driven wiring program"
+  },
+  {
+   "kind": "p",
+   "text": "We treat the connectome as the output of a developmental program and attempt to recover that program by iterated falsification (Fig. 1). The program has one data table and a small set of operators. The table, which we call the wiring genome, assigns to every ordered pair of cell types an exact edge quota; in the male this amounts to 3.83 million non-zero quotas covering 25,135,616 connections among 164,506 neurons of 11,751 types, and in the female 19,656,020 connections among 138,327 neurons of 8,772 types (Fig. 1)⟨⟨1,2,4⟩⟩. The operators act on instances within each quota: one fixes each cell’s exact in- and out-degree per partner type; one carries a per-cell activity factor scaling the cell’s attractiveness as a target; one biases target choice by per-type-pair distance kernels; and two circuit-specific operators wire the central complex by latent phase angles and the visual system by columnar offsets on a retinotopic lattice. A rejection sampler executes the quotas exactly, so type-pair edge counts are correct by construction rather than in expectation."
+  },
+  {
+   "kind": "p",
+   "text": "Every module entered the program through the same gate: a registered prediction, a test, and a verdict recorded before the next step. The battery includes degree distributions, per-type dispersion against the Poisson floor, the edge-distance profile, global transitivity, reciprocity, and, for the central complex, a rate-model test of bump dynamics on the regenerated heading ring⟨⟨17⟩⟩ (Supplementary Note 7). Scaled ten-fold to 1.65 million neurons, the program preserves type-pair edge counts to within 4 × 10⁻⁵ and keeps per-pair count correlations (Spearman 0.92); and the heading ring it regenerates sustains, in the same rate-model readout, a localized, self-maintained activity bump that tracks a moving drive, with tracking error falling as 1/√S and saturating near 0.37 rad beyond eight-fold scale (Supplementary Note 7)—a generative description of brains never measured."
+  },
+  {
+   "kind": "h2",
+   "text": "Connection counts are executed, not sampled"
+  },
+  {
+   "kind": "p",
+   "text": "Per-cell connection counts are a direct readout of the developmental program in both sexes: degree heterogeneity is executed, not sampled, and a single latent activity factor per cell explains the residual over-dispersion. Under the quota table alone, per-cell degrees are over-dispersed relative to Poisson yet under-dispersed relative to the real graph: the median per-type out-degree coefficient of variation (CV) is 1.55 (male) and 1.46 (female) times the Poisson floor, while quota-uniform sampling produces a slightly sub-Poisson 0.88 (Fig. 2a, b). The fix is not more randomness but more determinism. Reading each cell’s exact degree per partner type directly from the census brings the Kolmogorov–Smirnov (KS) distance between generated and real out-degree distributions to exactly zero in both sexes: the generator does not approximate the out-degree distribution, it reproduces it cell for cell by construction. A single per-cell activity factor, justified by a median correlation of 0.79 between out- and in-degree ratios within types, then reproduces the over-dispersion itself, including a small overshoot (generated 1.60 versus real 1.55 in the male; 1.69 versus 1.46 in the female), with per-type CV correlations of 0.95 (male) and 0.91 (female) between generated and real graphs."
+  },
+  {
+   "kind": "p",
+   "text": "The EPG cell type, the compass neurons of the ring attractor⟨⟨17⟩⟩, quantifies how precise this execution can be: the generator reproduces the EPG out-degree CV exactly in both sexes (male 0.0658; female 0.1032, to all four measured decimals). Yet the two sexes place this circuit at different noise floors. The male EPG CV sits 1.11 times its Poisson floor, essentially deterministic, whereas the female’s is over-dispersed at 1.59 times, with nearly identical cell counts (46 versus 47) (Fig. 2c). Deterministic degree execution is the cross-sex invariant; how much determinism is allocated to the heading ring is a sex difference. Two caveats bound the claim. Exact reproduction certifies the constraint grammar; the biological content is a property of the real graphs—their degree sequences sit at the deterministic limit—not of the generator. And the budgets themselves are read, not derived: a registered test of their derivability fails on both gates (Discussion)."
+  },
+  {
+   "kind": "h2",
+   "text": "Distance is an independent wiring axis"
+  },
+  {
+   "kind": "p",
+   "text": "Brains are embedded in space and wiring length is costly⟨⟨20,21⟩⟩, but whether distance is an independent term of the program or a by-product of cell-type geography is rarely tested at whole-brain scale. We estimated per-type-pair distance kernels non-parametrically on both connectomes (24 logarithmic bins, shrinkage toward a global kernel for sparse pairs; Methods). The kernels are strongly local: real edges compress the quota-uniform median distance from 26.1 to 15.9 µm in the male (soma coordinates) and from 162.6 to 76.1 µm in the female (arbor representative points; Methods). With kernels active, the generator reproduces the full distance profile (male KS 0.020; female KS 0.030) without touching degree statistics (Extended Data Fig. 1). Two observations make this more than bookkeeping. First, distance is orthogonal to clustering: the number of common neighbours along an edge is flat across distance, so spatial kernels cannot, and do not, generate the triadic-closure excess analysed below. Second, the female result was obtained on arbor representative points rather than somata, and the kernels transfer regardless: what the program encodes is a metric on arbor geography, consistent with wiring being decided where arbors overlap rather than where cell bodies sit⟨⟨22⟩⟩."
+  },
+  {
+   "kind": "h2",
+   "text": "A sex-invariant wiring kernel for the compass"
+  },
+  {
+   "kind": "p",
+   "text": "The central complex hosts the best-understood recurrent circuit in the fly brain, a ring attractor whose EPG–PEN–Δ7 architecture integrates heading⟨⟨17,23–27⟩⟩. We asked whether its wiring is governed by an instance-level geometric code. Fitting a signed Poisson model with a cosine kernel on latent phase angles, λ{_ij} = exp(a{_st} cos(θ{_i} − θ{_j} + φ{_st}) + b{_st}), where s and t are the pre- and postsynaptic types, θ{_i} is each cell’s latent phase, and the sign of a{_st} follows the transmitter, we find that instance geometry carries large and specific signal. On held-out cell pairs the model reaches AUC 0.909 in the male (type-level baseline 0.784) and 0.849 in the female (baseline 0.648), with weighted-count correlations of 0.75 and 0.69 (Fig. 3b). Model selection is unambiguous: a one-dimensional ring with a cosine kernel beats a two-dimensional Euclidean embedding (0.879), a linear embedding (0.849) and an inner-product code (0.751), and scrambling the learned phases destroys the signal (Fig. 3c). The ring is not a fit artefact; it is the geometry the wiring uses."
+  },
+  {
+   "kind": "p",
+   "text": "The decisive test is cross-sex. The nine amplitudes of the EPG/PEN ring block, fitted independently in the two connectomes, agree at r = 0.984 (Fig. 3a): the wiring kernel of the ring is essentially identical in two animals of opposite sex. Including the Δ7 block drops the correlation to 0.69: the fitted amplitude of the Δ7→EPG coupling reverses sign between sexes (male −6.13; female +3.95). The reversal replicates across reconstruction pipelines: in the hemibrain central complex—an independent female reconstruction made on the male’s pipeline—the gauge-invariant aligned coupling used for cross-dataset comparison, g = a·cosφ, is positive (+2.15, against +3.95 in FlyWire and −5.77 in the male; the male amplitude reads −6.13 raw), and the entire Δ7 output row follows the female sign pattern (Extended Data Table 2). The Δ7 dimorphism is thus a replicated sex difference in central-complex microcircuitry, complementary to the gross anatomical dimorphisms catalogued in both connectomes⟨⟨2,23⟩⟩. Instantiation noise, by contrast, is set independently by the two sexes: edge counts between central-complex cells are heavy-tailed around the kernel mean, and the EPG degree determinism differs nearly two-fold in floor units (Fig. 2c). The picture is precise: the same wiring equation, the same amplitudes, different noise floors. Development appears to fix the kernel and tune the determinism."
+  },
+  {
+   "kind": "h2",
+   "text": "Triadic closure from columnar assembly"
+  },
+  {
+   "kind": "p",
+   "text": "The closure excess is a triplet-level coupling, not a pairwise arbor feature. The program’s hardest macroscopic statistic is global transitivity, the fraction of wedges that close into triangles⟨⟨28,29⟩⟩. All headline values use the node-uniform wedge estimator (Methods): the real graphs read T = 0.256 in the male and 0.269 in the female. Figure 4a displays the generator stages on the classic wedge-uniform estimator, the conservative choice for both sexes, on which the male reads 0.112 against a quota-uniform baseline of 0.054 and the female 0.268 against 0.077, excesses of 2.1- and 3.5-fold respectively. This excess, which we denote γ, is a cross-sex invariant of fly brain wiring, not a property of one dataset, one sex or one reconstruction pipeline. We subjected γ to systematic elimination (Fig. 4b). Seven mechanism families—acceptance-level weighting of wedge-closing candidates, reciprocity-first routing, motif-directed placement, homophily dose–response, supertype-quota relaxation, per-cell-quota concentration and neuropil-overlap gating—carry at most a quarter of the excess between them, and the share carried by each is itself not conserved across sexes, ruling out a single shared proximal cause (Supplementary Methods)."
+  },
+  {
+   "kind": "p",
+   "text": "One clue to the missing mechanism is geographic. Closure is uncorrelated with soma distance, but biological closure should live where synapses are made: in neuropil, among overlapping arbors. Essentially every real edge joins cells with overlapping arbors (0.00% zero-overlap in the female, 0.06% in the male), while the quota-uniform null wastes a third of its placements on anatomically impossible pairs; and wedge-closure probability rises monotonically with the number of shared neuropils along nearly identical curves in the two sexes (Fig. 4c). Yet a pre-registered test falsified arbor overlap as the carrier of γ: a hard neuropil-overlap gate removes the impossible placements at no cost to degree and distance statistics, but raises female T only from 0.105 to 0.112. Pairwise arbor overlap is necessary for closure, but selecting on it explains almost none of the excess. Two further signatures point to the missing term: the female closure gap is anatomically concentrated (83% in optic-lobe endpoint pairs; optic–optic alone 5.0-fold in the pre-lattice generator), and closure in the real graph scales steeply with the synaptic strength of the wedge’s own two edges (0.20 for weak–weak wedges to 0.64 for strong–strong), whereas the generator, which assigns weights after placement, is flat. Both signatures implicate fine retinotopic adjacency in the optic lobe, which arbor representative points and coarse neuropil labels both erase."
+  },
+  {
+   "kind": "p",
+   "text": "The resolution is a discrete assembly rule rather than another weighting. We learned a two-dimensional lattice coordinate for every visual neuron by harmonic extension from medulla columnar anchors over the visual-system adjacency graph (Methods)⟨⟨30⟩⟩, then registered two competing predictions. Soft kernels on lattice offsets falsified their gate (T = 0.123 against a registered threshold of 0.19): rejection sampling can boost a candidate offset at most ~135-fold, whereas near-deterministic co-columnar wiring requires ~800-fold. The direct variant replaced weights with placement: for each quota edge, the type pair’s modal lattice offset is read from its empirical offset distribution, and the source cell’s quota is filled by its nearest same-hemisphere partners of the target type at that offset. This rule raised female T from 0.112 to 0.240, closing 82% of the residual gap to the real 0.269, collapsed the optic–optic closure deficit from 5.0- to 1.08-fold (female, lattice stage), and reproduced both closure laws—closure by overlap is matched at every level (Fig. 4c), and the closure-by-strength gradient emerges in the correct direction—with all guard statistics unchanged (out-degree KS 0; distance KS 0.014; EPG CV exact). Shuffling the learned coordinates, or replacing them with uniform random positions, removes almost none of the lift (≤0.018; Methods): the mechanism requires neither the hexagonal grid nor cell identity, only stereotyped per-type-pair offset statistics filled locally by quotas. Triadic closure in the fly brain is therefore not a wiring term in its own right but the graph-level shadow of deterministic columnar-scale circuit assembly executed by quotas. The causal carrier is the assembly rule—stereotyped per-type-pair offset statistics, filled locally—not retinotopic geometry per se: true coordinates add at most 0.018 of transitivity beyond shuffled or random positions with identical offset statistics. What the geometry does determine is where edges go: the learned offset kernels are conserved across sexes and peak exactly one lattice step from the origin in all eight documented columnar projections (Fig. 5)⟨⟨7,31,32⟩⟩."
+  },
+  {
+   "kind": "p",
+   "text": "Two registered experiments close the module’s remaining vulnerabilities. The first is conservation. We rebuilt the male lattice without using a single connection—columnar axes fitted to measured optic-lobe geometry (hexagonality 0.912; held-out placement error 0.90 columns, better than the connection-derived female lattice at 1.7)—re-estimated the male offset kernels on it, and harmonized the two sexes’ offset fields by a single contraction factor (Methods). Scored under all twelve dihedral symmetries with pre-registered gates, the male and female kernels agree on 68.7% of qualified type pairs, above both the 0.60 gate and the 99th percentile of a best-of-twelve shuffle null (0.672)⟨⟨7,33–35⟩⟩; the per-hemisphere split resolves into the two optic lobes’ opposite handedness (Fig. 5a–c). The second experiment is circularity: coordinates learned from the graph could in principle re-instantiate memorized common-neighbour structure. Regenerating the entire male stack on connection-exogenous coordinates lowered transitivity from 0.177 to 0.137 (12-seed means; Methods) and widened the optic–optic deficit to 2.07-fold (male, exogenous baseline): both registered improvement gates failed, and we record the failure (Fig. 5d). A permutation control attributes about half of the drop to coordinate–connectivity circularity; the corresponding female control bounds the circular share of the female closure lift at 0.018. What survives is an anatomically specific residual (optic lobe 2.07-fold, ventral nerve cord 2.02-fold, central brain 1.53-fold on the exogenous baseline), a measured open term rather than an unexplained one."
+  },
+  {
+   "kind": "h2",
+   "text": "Reciprocity as a per-cell mutual quota"
+  },
+  {
+   "kind": "p",
+   "text": "Edge reciprocity is the last statistic the layered program did not initially reach. The lattice module alone lifts the female generator from 0.128 to 0.225, because co-columnar placements are preferentially mutual; two dyad-stage modules derived from census facts, per-type-pair mutual-edge quotas with repair routing and reciprocity-potential targeting, raise it to 0.299 against the real 0.321 (Supplementary Methods). The remaining gap is closed by a final registered module: per-cell mutual-edge quotas mᵢ are read from the real graph, and each deficit cell retargets non-mutual out-edges onto its already-placed reverse partners of the same type. This transport step is collision-free by construction and provably leaves edge counts, out-degrees and weights untouched. Female reciprocity rises to 0.348, overshooting the real value because repair carries surplus mutual edges while filling deficits; a registered trim module then prunes each cell’s surplus to its own quota and re-fills the reopened deficits, landing at 0.3222 against the real 0.3213; the same machinery in the male lands at 0.2991 against 0.2998 (Table 1): both sexes sit within 0.001 of the data. What operates as grammar is the quota itself: each cell carries a mutual-edge budget, and executing it reproduces reciprocity in both sexes. An assembly-faithful variant of the trim, which draws retargeting candidates from each type pair’s modal lattice offset, keeps female transitivity inside its registered band where a distance-faithful trim could not, an independent trim-side confirmation of the columnar-assembly law."
+  },
+  {
+   "kind": "h2",
+   "text": "Transfer between sexes"
+  },
+  {
+   "kind": "p",
+   "text": "Cross-sex evidence comes in three grades, which we report separately: applicability of the model class (every parameter re-estimated on the other connectome), parameter conservation (independently fitted parameters agree quantitatively), and direct transfer (one sex’s parameters score the other sex’s held-out edges). The full battery was run on the female brain with every parameter re-derived from female data, and in reverse on the male with the mechanism families validated on the female side frozen and re-parameterized from the male census alone (Table 1, Extended Data Fig. 2). The architecture transfers without modification. On both directions the deterministic skeleton is exact: edge counts to the unit, out-degree KS 0.0000, and EPG degree precision to every measured decimal. Distance kernels transfer (female KS 0.014 on the full stack), and the central-complex angle model predicts held-out female wiring at AUC 0.849. Of the two hard statistics, reciprocity transfers fully once per-cell mutual quotas are executed and trimmed (above). Transitivity does not transfer completely in the male: the full stack reaches T = 0.177 (12-seed mean) against the male-real 0.256, below the pre-registered parity gate of 0.20, and we report the miss as registered. The gap decomposes geographically: 44% sits in optic–optic wedges, 31% in central-brain wedges and 17% in the ventral nerve cord, which carries no lattice machinery at all (Extended Data Fig. 2). The registered exogenous-coordinate control described above excludes coordinate quality as the explanation (Fig. 5d), and a four-round registered diagnostic of the nerve-cord residual finds no measured carrier: every concentration pattern tested—hemilineage, neuromere cohorts, soma position, circuit class, synaptic strength and connectivity communities⟨⟨36–38⟩⟩—is already reproduced or overproduced by the quota stack, leaving a uniform two-fold deficit (Supplementary Methods). The most plausible carrier is sub-neuropil arbor geometry that current annotations erase, the same situation as the optic lobe before its lattice. Guard statistics under the male full stack remain exact where construction forces them and degrade modestly where redirected placements cost realism (in-degree KS 0.067; distance KS 0.034); the degradation is registered rather than tuned away."
+  },
+  {
+   "kind": "p",
+   "text": "A third connectome supplies the control that two individuals cannot. The hemibrain⟨⟨23⟩⟩—an independent female adult central-brain reconstruction made on the same pipeline as the male and on a different pipeline from FlyWire—partially separates the sex and pipeline confounds. We ran the core battery on its typed subgraph (19,723 cells of 5,554 types, 3.2 million connections), with gates pre-specified in the registry (Supplementary Table 1, entries 25–26; Extended Data Table 2). The execution skeleton replicated: per-type out-degree dispersion sits at 1.67 times the Poisson floor (male 1.55, female 1.46), quota-uniform sampling is again sub-Poisson (0.69), and a per-cell activity factor restores per-type dispersion at Spearman 0.911. Three gates failed, informatively. Without the distance term, held-out same-type discrimination reaches AUC 0.528—matching the coordinate-free component values of both adults (0.548/0.542), the hemibrain export carrying no coordinates. Closure excess over the quota baseline is absent in this central-brain-only volume (1.18×, against 2.1×/3.5× in the whole-CNS graphs), a confirmatory prediction of the columnar-assembly account, whose carrier is the visual system the hemibrain volume excludes. Finally, whole-brain quota rates correlate slightly better with the same-pipeline male than with the same-sex FlyWire (Spearman 0.48 versus 0.43 on a three-way-controlled pair set): at the quota-table level, pipeline and annotation-lineage signatures are not weaker than sex. The same volume adjudicates the two remaining two-animal headline claims. Fitting the compass kernel on the hemibrain central complex—the cosine pipeline needs no coordinates—yields a positive aligned Δ7→EPG coupling (g = +2.15), replicating the FlyWire female’s sign against the male’s and excluding a pipeline artefact; the full Δ7 output row follows the female sign pattern in all five coupling classes, and the complete six-by-six amplitude matrix is closer to the same-sex connectome than to the same-pipeline male (gauge-invariant r = 0.986 versus 0.869). The EPG out-degree noise floor, by contrast, is intermediate (1.35 times the Poisson floor, between the male 1.11 and FlyWire 1.59), leaving that candidate dimorphism unresolved. The strongest cross-sex conservation claims therefore rest where they should—on the specialized compass kernel (Fig. 3), now replicated across all three reconstructions, not on the whole-brain quota table."
+  },
+  {
+   "kind": "h2",
+   "text": "Prediction of held-out connections"
+  },
+  {
+   "kind": "p",
+   "text": "Every parameter of the program is type-level or population-level; none encodes an individual cell pair. This permits an honest test of prediction rather than fit. We masked a random 10% of edges, re-estimated every scoring component on the remaining 90%, and scored held-out edges against two negative classes. Against random non-edges the full score discriminates at AUC 0.985 (female) and 0.987 (male). The hard test, negatives drawn from the same source cell and the same target type, gives AUC 0.858 (female) and 0.812 (male), far above a degree-propensity baseline (0.548/0.542) and above the pre-registered gate of 0.65 in both sexes (Extended Data Table 1; the sampling protocol and its post-hoc audit are in Methods and Supplementary Note 2). The decomposition carries a finding of its own: within a type pair the quota term is constant by construction (AUC 0.500 exactly), and discrimination is carried by position, distance kernels alone reaching 0.826 (female) and 0.753 (male) and lattice offsets 0.667 (both sexes). Between type pairs, existence is carried by quotas and geometry; within a pair, by lattice-column position, the same module that carries triadic closure. As a final counterfactual we swapped the two sexes’ parameter tables outright: male quota rates and distance kernels score female held-out edges at 0.812 against the female-trained 0.828, and female parameters score male edges at 0.751 against 0.759, both within the registered swap gate of 0.02. The type-name vocabulary shared by the two nomenclatures covers only 41% (female) and 36% (male) of held-out pairs, below the registered 60% gate, so functional transfer is supported where homologous type identity is identifiable, and the whole-graph claim is registered as indeterminate."
+  },
+  {
+   "kind": "p",
+   "text": "Read as a model comparison, the falsification ladder benchmarks the program against canonical generative-model classes (Extended Data Table 1). An exact configuration model with the same degree sequence⟨⟨39,40⟩⟩ yields 3% of the real transitivity in both sexes; a degree-corrected type-level blockmodel⟨⟨41⟩⟩, which is the quota null itself, reaches 27% (female) and 48% (male); adding per-cell quotas, activity and distance kernels, the spatial generative class fit to cortical connectomes⟨⟨13,15⟩⟩, reaches 39% of the female value; and the columnar-assembly rung reaches 89% of the real female value (equivalently, 82% of the residual gap above the pre-lattice generator). No single canonical class comes within half of the data. The program’s closure is achieved by composition, and the composition is the claim."
+  },
+  {
+   "kind": "p",
+   "text": "The connectome field has been assembly-line successful at producing atlases⟨⟨1,2,9,10,23⟩⟩ and statistical portraits⟨⟨5⟩⟩. A wiring program is a different kind of object: executable, falsifiable and comparable. Two connectomes of the same species can be diffed at the level of mechanisms rather than edges; here, the diff between the male and female programs came out nearly empty except for the Δ7 coupling—a sign reversal since replicated in a third connectome built on the male’s own pipeline—the instantiation noise of the heading ring, and scope. Where classical comparative connectomics asks which connections differ⟨⟨42⟩⟩, program-level comparison asks which rules differ, a question with a much smaller answer space, and the one development actually writes in. The two per-cell terms of the program have distinct, measurable biological identities. In the male ventral cord, 14.7% of per-cell quota variance lies between hemilineages (against a permutation ceiling of 0.007), so quotas are allocated by developmental lineage⟨⟨36,37⟩⟩; the activity factor carries no lineage or arbor-breadth structure but is spatially smooth over soma position in both sexes (Moran’s I = 0.09 male, 0.29 female)⟨⟨43⟩⟩, a positional rather than developmental modulation. The genome allocates by lineage; the activity term tunes by place. The complete registry ledger—every gate, every verdict, every failure—is published with this paper (Supplementary Table 1), so that each registered claim can be audited line by line."
+  },
+  {
+   "kind": "p",
+   "text": "Two recent works are closest in spirit and invite direct comparison. Richter and Schneidman⟨⟨51⟩⟩ predict C. elegans connectivity from a compact stochastic developmental model (cell type, distance, birth time, reciprocity and pruning) and validate it across individuals and developmental stages—the multi-individual, whole-organism replication our study still lacks (the hemibrain adds a third reconstruction, but of the central brain only). Relative to that line, our contribution is complementary: a two-orders-of-magnitude larger system (about 1.4×10{_5} neurons and 2×10{_7} edges per connectome versus the 180-neuron nerve ring), exact rather than approximate execution of per-cell connection budgets, a pre-registered falsification battery whose full ledger of failures is published, and a parameter-level cross-sex comparison within one species. Their observed under-prediction of reciprocal triads, repaired by an explicit reciprocity term, parallels the dyad stage of our own ladder. Lappalainen et al.⟨⟨52⟩⟩ constrain network models with the fly connectome to predict neural activity across the visual system; that programme takes the wiring diagram as given and asks what it computes, whereas we ask what writes it. The two are designed to meet: our measured residual—an anatomically specific, uniform two-fold closure deficit in the ventral cord—marks exactly the structural uncertainty such activity models must tolerate."
+  },
+  {
+   "kind": "p",
+   "text": "The exactness of degree execution deserves emphasis because it was not forced in the usual sense: the quota table fixes type-pair totals, but per-cell quotas are an additional empirical fact, reproducible from census alone. This is consistent with cell-type programs that specify connection budgets⟨⟨44⟩⟩ and extends them: budgets are per-cell, not per-type, and a single activity factor per cell coordinates the in- and out-sides. We therefore registered a direct test of the derivability question—can the budgets be derived rather than read? Holding out cells and predicting their budgets from cell type, hemilineage and soma position (Methods), the model explains at most 23% of budget size (R{_2} = 0.096 on the lineage-annotated population, 0.226 on all positioned cells), with lineage adding exactly nothing beyond its own permutation null and position adding ≤0.005; for budget allocation across partner types, type identity carries half of the variance (R{_2} = 0.499) while lineage and position together add 0.004. Both registered gates failed. The budgets are thus an irreducible, high-dimensional fact of each connectome; whether the genome writes them through rules we have not measured—morphology being the untested annotation—or through cell-autonomous specification is an open question, and we report it as such. That male EPG degrees sit essentially at the deterministic floor while female EPG degrees do not suggests that determinism itself is regulated per circuit and per sex. The complement is equally instructive: where function demands randomness, as at the olfactory input to the mushroom body⟨⟨18,19⟩⟩, the program allocates it deliberately."
+  },
+  {
+   "kind": "p",
+   "text": "The most consequential output of a falsification-driven program is its residual and, here, its eventual explanation. Triadic closure is the oldest non-random signature in network science⟨⟨28,29⟩⟩, and cortical microcircuits show strongly nonrandom triplet structure⟨⟨45,46⟩⟩; in both fly connectomes it survived every local mechanism we could build, with a larger factor in the female than the male, opposite to what type-resolution artefacts would predict. The answer, reached through two registered falsifications, is that γ is not a wiring term at all but the graph-level shadow of a developmental geometry: visual neurons sit on a retinotopic lattice, each cell type pairs with its partners at a stereotyped columnar offset, and quotas are filled by the nearest available partners at that offset. Executing that one rule makes the excess closure appear on its own, at the right level, in the right neuropil groups, with the right dependence on arbor overlap and synaptic strength, and without any parameter that references triangles. The account also issued a confirmatory prediction and met it: the hemibrain volume, whose reconstruction excludes the optic lobes, shows no closure excess over the quota baseline (1.18×, Extended Data Table 2)—to our knowledge the one instance in this study where the program predicted an independent dataset before we measured it. Two implications reach beyond flies. Methodologically, an unexplained whole-brain network statistic can be cornered by registered falsification and resolved at connectome scale. Biologically, triplet structure that network science treats as a property of the graph may instead report the assembly program that wrote it."
+  },
+  {
+   "kind": "p",
+   "text": "Several caveats qualify the claims. The two connectomes differ in scope (the male includes the ventral nerve cord) and in coordinate provenance (male somata; female arbor representative points), so we compared only ratios and profile shapes. Reciprocity is matched by construction to within a thousandth once per-cell mutual quotas are executed, so that result certifies the quota grammar rather than predicting the set point independently. In-degree distributions show a slight overshoot under the single-factor activity model, and the shortest distance bin retains a residual, both pointing to missing cell-level multiplicity structure. Rare types admit degenerate kernel fits and were excluded from cross-sex comparisons. Two harder limits frame every cross-sex claim. First, our whole-CNS sample remains one animal per sex (FIB-SEM MaleCNS; EM-plus-crowdsourcing FlyWire), where sex is confounded with individual, annotation and reconstruction method. The hemibrain adds a second female reconstructed on the male’s pipeline, breaking the confound for central-brain statistics—where the pipeline signature is if anything the stronger (Extended Data Table 2)—but not for whole-brain ones. The Δ7 coupling reversal, now replicated across pipelines, is no longer merely a candidate dimorphism; the EPG noise-floor difference remains one, its hemibrain value (1.35×) lying between the male (1.11×) and FlyWire (1.59×) floors. Second, our twelve seeds measure computational stability of the estimators, not biological replication; resolving the two requires further whole-brain connectomes. Because the female lattice coordinates are connection-derived, a circular component could in principle inflate the female closure share; the coordinate-shuffle control bounds it at 0.018 of transitivity, 14% of the lattice lift. Male closure remains the one statistic below its pre-registered parity gate, with an anatomically specific residual under registered falsification criteria. A post-hoc statistical audit corrected two earlier errors—a misquoted female reference transitivity and a defective negative sampler in the edge-prediction analysis—and all registered gates, verdicts and errata are tabulated in Supplementary Table 1; every gate is reported as registered, including every failure."
+  },
+  {
+   "kind": "p",
+   "text": "A wiring program turns the connectome from a snapshot into a family. We have used it to scale a brain ten-fold and to transfer a program across sexes; the same machinery supports cross-species comparison, from larva to adult⟨⟨10⟩⟩ and across connectomes of both sexes in other species⟨⟨42,47–49⟩⟩, counterfactual genetics, in which removing a module mimics a developmental knockout at graph level, and benchmarking of future connectomes by program distance rather than edge overlap. The open terms are now measured and anatomically specific: closure residuals of about two-fold in the male optic lobe and ventral nerve cord, and the bounded circular component inside the female closure share."
+  },
+  {
+   "kind": "h1",
+   "text": "Methods"
+  },
+  {
+   "kind": "h3",
+   "text": "Data"
+  },
+  {
+   "kind": "mp",
+   "text": "The male connectome is the MaleCNS whole-CNS resource⟨⟨2⟩⟩ (adult Drosophila melanogaster): we used the typed-node census (164,506 neurons with type labels, 11,751 types) and the typed–typed aggregated connectivity (25,135,616 edges, 122.3 million synapses), with soma coordinates. The female connectome is FlyWire FAFB v783 via the Codex release⟨⟨1,4,50⟩⟩: all neurons with a primary_type label (138,327 neurons, 8,772 types), connections aggregated to typed–typed pairs with identical conventions (19,656,020 edges; synapse counts summed; weight ≥ 1), neurotransmitter calls, and arbor representative-point coordinates. We verified that Codex coordinates are arbor representative points rather than somata (within-type spans 127–192 µm for columnar CX types versus 15–22 µm for male soma clouds) and therefore interpret female distances as arbor geography throughout. Both graphs are directed, weighted, and restricted to edges whose endpoints carry a primary type."
+  },
+  {
+   "kind": "h3",
+   "text": "The wiring program"
+  },
+  {
+   "kind": "mp",
+   "text": "Genome. For each ordered type pair (s, t) the edge quota Eₛₜ is the realized count; quotas are executed exactly by a rejection sampler, so type-pair counts hold to the unit. CELLQ. Per-cell, per-partner-type in- and out-degrees are read from the census and executed exactly (10.0 million quota records in the female). ACT. Each cell carries aᵢ = clip(kᵢ(in) / µₜ(ᵢ), 0.1, 10), where µₜ is the type mean in-degree; candidate targets are accepted with weight proportional to aⱼ. SPATIAL. Per-type-pair kernels wₛₜ(d) are estimated in 24 log-spaced bins (0.5–200 µm) as the ratio of realized to quota-uniform bin counts, shrunk toward a global kernel with strength κ = 25, capped per pair (mean cap 26.9), and applied by rejection sampling with oversampling factor 48; pairs with fewer than 20 edges inherit the global kernel. ANGLE. For six central-complex types (EPG, EPGt, PEN_a/PEN1, PEN_b/PEN2, PEG, Δ7) we fit the cosine-kernel Poisson model by spectral initialization followed by Adam optimization and three global phase-sweep rounds; signs of aₛₜ follow transmitter (GABA and glutamate negative, acetylcholine positive). Evaluation uses 10% held-out cell pairs (AUC) and weighted-count correlation. Male and female CX parameters were fitted independently."
+  },
+  {
+   "kind": "mp",
+   "text": "Three further modules were admitted through the same registered loop; full algorithms, parameters and counter histories are in Supplementary Methods. A neuropil-overlap gate restricts each placement to targets whose input arbor mask overlaps the source’s output mask and is retained as a feasibility module, though it carries only 4.1 points of the female closure gap. The lattice module learns a two-dimensional retinotopic coordinate for every visual neuron by harmonic extension from medulla columnar anchors (99.9% coverage; held-out median error 1.7 columns), tabulates each type pair’s empirical offset distribution, and fills each quota edge with the nearest same-hemisphere partners at the pair’s modal offset. The reciprocity stack combines per-type-pair mutual-edge quotas, per-cell mutual quotas executed by collision-free transport, and an assembly-faithful trim, landing both sexes within 0.001 of the real reciprocity."
+  },
+  {
+   "kind": "h3",
+   "text": "Diagnostics"
+  },
+  {
+   "kind": "mp",
+   "text": "Transitivity T is estimated by wedge sampling with an identical estimator on real and generated graphs; cross-sex comparisons and all full-stack values use node-uniform centre sampling (the male node-uniform real estimate is 0.2559 ± 0.0002 across seeds, reported as 0.256; classic wedge-uniform values are 0.112 male and 0.268 female real). The 2.1- and 3.5-fold excesses over the quota-uniform null are stated on the classic estimator, which is conservative for both sexes. Headline values throughout the paper are node-uniform; classic wedge-uniform values appear only where the staged generator comparison requires them (Fig. 4a) and in Supplementary Table 1. Degree agreement is the KS distance between generated and real per-cell degree sequences per partner type, pooled. Dispersion is the median per-type ratio of out-degree CV to its Poisson floor 1/√µ (types with mean degree above 5). Distance profiles use full edge-set histograms in the 24 bins. Reciprocity is the fraction of directed edges whose reverse exists. All generation runs use fixed seeds; edge counts are exact by construction; no male parameter entered any female fit and vice versa."
+  },
+  {
+   "kind": "h3",
+   "text": "Registered falsification ledger"
+  },
+  {
+   "kind": "mp",
+   "text": "Eight mechanism families were implemented and tested against the registered criterion (raise T to the real value with degree, distance and CX statistics unchanged): (1) γ-weighted acceptance of wedge-closing candidates; (2) reciprocity-first routing; (3) motif-directed placement; (4) homophily dose–response across same-superclass share; (5) supertype-level quota relaxation (29.7% conversion ceiling); (6) per-cell quota concentration and spatial kernels (partial credit); (7) neuropil-overlap gating and weighting (partial credit: the gate is retained as a feasibility module but carries only 4.1 points of the female gap); and (8) lattice-based mechanisms, split by registered prediction into soft lattice-offset kernels (falsified at T = 0.123 against the 0.19 threshold) and direct lattice quota-fill (confirmed: T = 0.240, 82% of the residual gap, guards unchanged). Registration texts, gates, seeds and verdicts for all experiments are tabulated in Supplementary Table 1."
+  },
+  {
+   "kind": "h3",
+   "text": "Held-out edge prediction"
+  },
+  {
+   "kind": "mp",
+   "text": "Edges of each connectome were split at random (seed 11) into 90% train and 10% test; every scoring component was estimated on train edges only: type-pair quota rates, per-cell activity factors, distance kernels (24-bin likelihood-ratio histograms; per-pair for pairs with at least 500 train edges) and lattice-offset kernels (±20 columns, uniform background). 200,000 held-out edges (seed 12) were scored with two negative classes: same-type negatives (same source cell, random same-type non-adjacent target) and random non-edges. Scores were products of component likelihood ratios; AUC by pairwise rank comparison. Registered gates: full same-type AUC ≥ 0.65 in both sexes (passed); full minus best single-component arm ≥ 0.05 (female +0.033, failed; male +0.059, passed; reported as split); full ≥ degree baseline + 0.10 (passed). Erratum. The first version drew same-type negatives by uniform proposal over all cells; for the 86–89% of held-out edges whose target type is small, no match was found within the proposal budget and a single fallback cell silently served as the negative (measured by exact re-execution). All within-pair AUCs from that run (full 0.947 female / 0.942 male) are superseded. The corrected sampler draws uniformly within the target type’s member bucket, verifies non-adjacency in the full graph, and excludes test items without a valid negative (final n = 189,164 female, 186,286 male); every other component is byte-identical. Corrected same-type AUCs (female/male): quota 0.500/0.500 by construction, activity 0.548/0.542, distance 0.826/0.753, lattice 0.667/0.668, full 0.858/0.812; random-negative AUCs 0.985/0.987. The correction reverses our initial division-of-labour reading for the within-pair task: position terms, not quotas, carry the discrimination. Cross-sex swap. Transferable quantities were type-pair quota rates keyed by exact type-name match between the two nomenclatures and distance kernels harmonized by within-sex quantiles; lattice and activity terms were excluded by registration. Female edges scored by male parameters: AUC 0.8122 versus 0.8279 female-trained; male edges scored by female parameters: 0.7507 versus 0.7587; both drops within the registered 0.02 gate. Donor-vocabulary coverage of held-out positive pairs is 40.9% (female) and 35.5% (male), missing the 60% gate; the whole-graph transfer claim is registered as indeterminate."
+  },
+  {
+   "kind": "h3",
+   "text": "Statistical uncertainty and biological anchoring"
+  },
+  {
+   "kind": "mp",
+   "text": "Node-uniform transitivity estimates were re-measured at 12 seeds × 500,000 wedges per graph (Table 2); all headline gaps exceed 100 standard errors. The flagship female value quoted in the main text (0.225) is the registered P8g trim run; its 12-seed mean is 0.22780 ± 0.00016, and the gap to the real 0.2695 is 0.044. A post-hoc audit found that the female real transitivity had earlier been misquoted as 0.257 (the male value); the correct estimate is 0.2695 ± 0.0002, confirmed by an independent bounded-enumeration estimator (0.27238 ± 0.0005) and by variants excluding unlabelled cells or thresholding synaptic weight (Supplementary Note 1). All female closure quantities are reported against the corrected value; the pre-registered female band [0.22, 0.26], registered around the misquoted value, no longer brackets the real graph, and gates are reported as registered. Male-side quantities are unaffected; the registered single-seed male full-stack run read 0.182 and is superseded by the 12-seed mean used throughout."
+  },
+  {
+   "kind": "mctable",
+   "rows": [
+    [
+     "Graph",
+     "Node-uniform T (12 seeds × 500,000 wedges)"
+    ],
+    [
+     "Female real",
+     "0.26949 ± 0.00022"
+    ],
+    [
+     "Female completed program",
+     "0.22780 ± 0.00016 (registered flagship run 0.225)"
+    ],
+    [
+     "Female lattice stage",
+     "0.23978 ± 0.00015"
+    ],
+    [
+     "Male real",
+     "0.25586 ± 0.00017"
+    ],
+    [
+     "Male completed program",
+     "0.17742 ± 0.00016 (single-seed run 0.182)"
+    ],
+    [
+     "Male exogenous control",
+     "0.13734 ± 0.00014"
+    ],
+    [
+     "Male shuffle control",
+     "0.16122 ± 0.00013"
+    ]
+   ],
+   "caption": "Table 2 | Twelve-seed Monte-Carlo estimates of node-uniform transitivity (mean ± s.e.m. across seeds). The registered single-seed runs are noted where they differ.",
+   "widths": [
+    4500,
+    4500
+   ]
+  },
+  {
+   "kind": "mp",
+   "text": "Variance decomposition of per-cell out-degree quotas across the 35 ventral-cord hemilineages parsed from nomenclature (11,437 cells) gives η² = 0.147 against 200 label permutations (null 0.0030 ± 0.0007; P = 0.005). Because the activity factor is normalized to mean 1 within each type, its between-lineage variance vanishes for any type-level grouping; the lineage test was therefore run on quotas, recorded as a design amendment. The activity factor is spatially smooth over soma position in both sexes (Moran’s I on the soma 8-nearest-neighbour graph, 20,000-cell subsamples, 200 permutations: male 0.092, female 0.292; both P = 0.005)⟨⟨43⟩⟩, shows no lineage or arbor-breadth structure (|ρ| ≤ 0.05), and its within-lineage long-axis gradients (mean |ρ| = 0.137) sit below the pre-registered effect-size floor of 0.15, recorded as a failed gate."
+  },
+  {
+   "kind": "mp",
+   "text": "The four displayed type pairs (L5→Mi4, Tm20→Tm20, L5→Mi1, L5→L5) are columnar visual-system channels whose within-column wiring is documented anatomically⟨⟨7,31,33–35⟩⟩: lamina cartridges map one-to-one onto medulla columns under retinotopy, and L5, Mi1, Mi4 and Tm20 are columnar cell types. We registered, before inspection, the prediction that the learned kernels’ modal offsets for these pairs lie within one column of the origin in both sexes; all eight modal offsets sit at exactly one lattice step, exceeding the gate, with directions agreeing across sexes up to the per-hemisphere coordinate conventions."
+  },
+  {
+   "kind": "h3",
+   "text": "Quota derivability test (P19)"
+  },
+  {
+   "kind": "mp",
+   "text": "The derivability of per-cell budgets was pre-registered before execution (gates, population and model ladder frozen). Male cells were scored on three annotations: fine cell type, hemilineage (itoleeHl or trumanHl) and soma position. The primary population comprised the 51,890 cells carrying both a lineage annotation and a valid soma coordinate; a secondary population (138,556 cells) tested type and position alone. A deterministic ladder of predictors was evaluated under five-fold cell-held-out cross-validation (seed 13): type means (M1), type×lineage means with small-group fallback (M2), and M2 plus a within-group eight-nearest-neighbour spatial residual (M3). Targets were per-cell total out-degree (budget size) and the 7,135,951 non-zero per-cell per-partner-type quota entries (budget allocation). Registered gates: R{_2} ≥ 0.80 for budget size; R{_2} ≥ 0.50 with a beyond-type marginal ≥ 0.05 for allocation; a 50-permutation lineage null as guard. All randomized splits used the registered seed; the verdict and all numbers are in the registry ledger (Supplementary Table 1, entry 24)."
+  },
+  {
+   "kind": "h1",
+   "text": "Data availability"
+  },
+  {
+   "kind": "mp",
+   "text": "The male connectome is the MaleCNS v1.0 flat connectome (164,506 typed neurons, 25,135,616 connections), distributed by the FlyEM project (https://storage.googleapis.com/flyem-male-cns/v1.0/). The female connectome is FlyWire FAFB snapshot v783 via the Codex public bucket (138,327 typed neurons, 19.7 million connections; https://storage.googleapis.com/flywire-data/codex/data/fafb/783/). The third connectome is the hemibrain v1.2 exported traced adjacencies (21,739 traced neurons; the typed subgraph analysed here spans 19,723 cells of 5,554 types and 3,233,913 connections), distributed by the FlyEM project (https://storage.googleapis.com/hemibrain/v1.2/exported-traced-adjacencies-v1.2.tar.gz). Derived per-cell quantities used here (type labels, soma coordinates, neuropil masks, learned lattice coordinates) are reproducible from these sources with the accompanying scripts. The registry is an internal, date-stamped research log (dates in Supplementary Table 1), not a third-party registration platform; we use “registered” in this lab-notebook sense throughout. Registration texts, pre-registered gates, seeds and verdicts for all 26 experiments, the registry ledger (Supplementary Table 1) and the full numbered pipeline are available to reviewers through an anonymized repository during review, and will be deposited in a public repository with a persistent identifier and frozen upon acceptance."
+  },
+  {
+   "kind": "h1",
+   "text": "Code availability"
+  },
+  {
+   "kind": "mp",
+   "text": "The full pipeline, comprising 194 single-purpose scripts covering data ingestion, module estimation, generation, every registered falsification experiment, all controls and diagnostics, the statistical battery and figure production, is bundled with this paper with a one-line manifest per script. A registry ledger tabulating all 26 registered experiments, their gates, verdicts (including every failure and boundary outcome) and the eight errata accompanies the paper as Supplementary Table 1. All randomized estimates use fixed seeds (wedge sampler seeds 1–12; edge-split seed 11; lattice permutation seed 13). The bundled code is available to reviewers in anonymized form during review. Every result in this paper can be regenerated end-to-end from the three public connectomes by running the numbered scripts in order; each statistic is written to a machine-readable log as it is computed, and the values quoted in the text were transcribed from these logs."
+  },
+  {
+   "kind": "refs_anchor",
+   "text": ""
+  },
+  {
+   "kind": "h1",
+   "text": "Acknowledgements"
+  },
+  {
+   "kind": "mp",
+   "text": "This work is built on three openly shared connectomes, and we thank the communities that produced them. The female brain data are the FlyWire FAFB connectome (snapshot v783, served through Codex), produced by the FlyWire Consortium—a community proofreading effort coordinated from Princeton University—on the FAFB electron-microscopy volume imaged by Zheng and colleagues; FlyWire asks its users to co-cite Dorkenwald et al.⟨⟨1⟩⟩, Schlegel et al.⟨⟨4⟩⟩ and the FAFB volume⟨⟨3⟩⟩ and to acknowledge flywire.ai, as we do here. The male CNS data are the MaleCNS v1.0 resource (CC-BY 4.0), acquired, reconstructed and annotated by Janelia’s FlyEM Project Team and the Cambridge Drosophila Connectomics Group/MRC Laboratory of Molecular Biology in collaboration with the Connectomics group at Google Research⟨⟨2⟩⟩, supported by the Howard Hughes Medical Institute, the Wellcome Trust and core funding from the Medical Research Council to the Laboratory of Molecular Biology. The third connectome is the hemibrain v1.2 central-brain resource, likewise acquired, reconstructed and annotated by Janelia’s FlyEM Project Team with its collaborators⟨⟨23⟩⟩; the cross-pipeline adjudications reported here rest on it. We thank the hundreds of proofreaders and annotators of all three projects whose collective labour made this analysis possible. This work received no specific grant from any funding agency in the public, commercial or not-for-profit sectors."
+  },
+  {
+   "kind": "h1",
+   "text": "Author contributions"
+  },
+  {
+   "kind": "mp",
+   "text": "X.X.: conceptualization, methodology, software, formal analysis, investigation, writing—original draft. H.F.: supervision, validation, writing—review and editing, and study-design discussion. T.H.: data curation, validation, writing—review and editing, and study-design discussion."
+  },
+  {
+   "kind": "h1",
+   "text": "Competing interests"
+  },
+  {
+   "kind": "mp",
+   "text": "X.X. and T.H. are employees of Tsingjiao Information Science (Beijing) Co., Ltd.; this employment relationship is declared for transparency and does not constitute a commercial or financial interest in the findings reported here. The authors declare no other competing interests."
+  },
+  {
+   "kind": "mp",
+   "text": "Correspondence and requests for materials should be addressed to Hang Fan, School of Economics and Management, North China Electric Power University (email: fanhang@ncepu.edu.cn)."
+  },
+  {
+   "kind": "h1",
+   "text": "Figure legends"
+  },
+  {
+   "kind": "caption",
+   "text": "Fig. 1 | The wiring program and its falsification loop. The two connectomes at identical edge conventions (directed typed–typed pairs, synapse counts summed, weight ≥ 1): MaleCNS⟨⟨2⟩⟩ (164,506 neurons, 11,751 types, 25,135,616 edges, whole CNS) and FlyWire FAFB v783 (138,327 neurons, 8,772 types, 19,656,020 edges, brain only)⟨⟨1,4⟩⟩. A typed connectome is reverse-engineered into a type-pair quota table with per-cell quotas (CELLQ), executed exactly by a rejection sampler through operator modules (ACT, one activity factor per cell; SPATIAL, per-type-pair distance kernels; ANGLE, central-complex phase kernels; the lattice quota-fill and reciprocity modules, admitted later through the same loop, are not drawn). Every generated graph passes through the falsification battery; each mismatch either admits a new mechanism or falsifies a candidate. Seven mechanism families were rejected for triadic closure before lattice quota-fill resolved it."
+  },
+  {
+   "kind": "caption",
+   "text": "Fig. 2 | Deterministic degree execution transfers across sexes. a, KS distance between generated and real degree distributions at successive program stages (the interim male generator is labelled v10c): out-degree KS is exactly 0 in both sexes once per-cell quotas (CELLQ) execute the census; in-degree KS ≤ 0.024. b, Median per-type out-degree CV relative to the Poisson floor along the module ladder (the male curve shows the interim v10c generator and ends at 1.70×; the completed male stack reads 1.60×, Table 1): quota-uniform sampling is sub-Poisson (0.88×), per-cell quotas restore the floor, and one activity factor per cell reproduces the real over-dispersion (dotted lines: real 1.55× male, 1.46× female). c, EPG out-degree CV: real and generated values coincide to four decimals in both sexes, but the female CV sits 1.59× above its Poisson floor against 1.11× in the male (n = 46 and 47 cells)."
+  },
+  {
+   "kind": "caption",
+   "text": "Fig. 3 | A sex-invariant wiring kernel for the ring attractor. a, Cosine-kernel amplitudes aₛₜ for the nine ordered pairs of the EPG/PEN ring block, female versus male (r = 0.984); Δ7↔EPG couplings (orange) depart from identity, with the Δ7→EPG coupling’s amplitude reversing sign between sexes. b, Held-out link-prediction AUC of the latent-angle cosine-kernel model versus the type-level baseline in both sexes. c, Model selection on the male: a one-dimensional ring with a cosine kernel beats a two-dimensional Euclidean embedding, a linear embedding and an inner-product code, and a phase-scrambled control falls below the type-level baseline (dotted line)."
+  },
+  {
+   "kind": "caption",
+   "text": "Fig. 4 | The triadic-closure excess and its resolution as columnar lattice assembly. a, Global transitivity of generator stages (bars) versus real graphs (solid lines) in both sexes. Male stages are shown on the classic wedge-uniform estimator; female values coincide across estimators to within 0.002; headline cross-sex values use the node-uniform estimator (Methods). Pairwise modules each move T by a few points; the lattice quota-fill module raises female T from 0.112 to 0.240—82% of the residual gap to the real 0.269, equivalently 89% of the real value itself. b, Share of the closure gap carried by each tested mechanism family, listed in the order discussed in the main text; seven families together contribute at most a quarter, while lattice quota-fill closes 82% on its own. c, Wedge-closure probability against the number of neuropils shared by the wedge endpoints, real versus pre-lattice and lattice generators: the law is matched at every level only after lattice assembly."
+  },
+  {
+   "kind": "caption",
+   "text": "Fig. 5 | The columnar-assembly kernel is conserved across sexes; removing coordinate circularity isolates its true closure contribution. a, Offset-lift fields (observed over uniform offset density) for four representative type pairs (L5→Mi4, Tm20→Tm20, L5→Mi1, L5→L5), male (top) versus spacing-harmonized female (bottom); circles mark each field’s modal offset, and all eight modal offsets sit exactly one lattice step from the origin⟨⟨7,31,33–35⟩⟩. b, Per-symmetry peak agreement between the male and harmonized-female kernel maps on the selection panel: pooled pairs (grey), right-eye pairs (blue), left-eye pairs (green); right-eye pairs peak at the axis-swap reflection, left-eye pairs at the 180° rotation, reflecting the optic lobes’ opposite handedness. c, Registered validation panel: best-of-twelve shuffle-null distribution (300 replicates) with observed agreement 0.687 (red), identity-transform agreement 0.597 (dashed) and null p99 0.672 (dotted). d, The exogenous-coordinate control: real male transitivity (grey) versus the generator on connection-derived coordinates (0.177, 12-seed mean) and on the connection-exogenous rebuild (0.137; both registered improvement gates failed as registered), with the optic–optic closure deficit (red) widening from 1.29× to 2.07×; a permutation control attributes about half of the drop to coordinate–connectivity circularity. Held-out edge prediction is reported in Extended Data Table 1."
+  },
+  {
+   "kind": "caption",
+   "text": "Table 1 | Cross-sex transfer battery. Female parameters were estimated from female data only, male full-stack parameters from male data only; the architecture is frozen across sexes. Exact entries hold to the unit or to every measured decimal. The male transitivity entry misses its pre-registered parity gate (0.20) and is reported as registered; reciprocity entries are quota-exact after the registered trim module. †Female distances are computed on arbor representative points; absolute scales are not comparable to the male, compression ratios and profile shapes are. The female full stack includes the neuropil-overlap gate, lattice quota-fill, dyad modules, mutual-quota transport and the assembly-faithful trim (Methods), under which T = 0.225 within its registered band. Carrier-level labels follow the third-connectome audit (Extended Data Table 2): execution rows certify the quota grammar on census quantities that reconstruction pipelines define by convention; mechanism rows carry the biological claims."
+  },
+  {
+   "kind": "table1",
+   "rows": [
+    [
+     "Diagnostic",
+     "Male real",
+     "Male program",
+     "Female real",
+     "Female program",
+     "Verdict",
+     "Carrier level"
+    ],
+    [
+     "Edge count",
+     "25,135,616",
+     "25,135,616",
+     "19,656,020",
+     "19,656,020",
+     "Exact",
+     "Execution (census)"
+    ],
+    [
+     "Out-degree KS",
+     "—",
+     "0.0000",
+     "—",
+     "0.0000",
+     "Exact, both sexes",
+     "Execution (census)"
+    ],
+    [
+     "In-degree KS",
+     "—",
+     "0.067",
+     "—",
+     "0.0235",
+     "Transfers; degrades under male full stack",
+     "Execution (activity)"
+    ],
+    [
+     "Per-type CV / Poisson floor (median)",
+     "1.55",
+     "1.60",
+     "1.46",
+     "1.69",
+     "Transfers (incl. overshoot)",
+     "Mechanism (activity)"
+    ],
+    [
+     "EPG out-degree CV",
+     "0.0658",
+     "0.0658",
+     "0.1032",
+     "0.1032",
+     "Exact, both sexes",
+     "Execution (census)"
+    ],
+    [
+     "Median edge distance",
+     "15.9 µm",
+     "16.7 µm",
+     "76.1 µm†",
+     "79.0 µm†",
+     "Transfers (improved)",
+     "Mechanism (distance)"
+    ],
+    [
+     "Distance-profile KS",
+     "—",
+     "0.034",
+     "—",
+     "0.014",
+     "Transfers (improved)",
+     "Mechanism (distance)"
+    ],
+    [
+     "CX latent-angle held-out AUC",
+     "—",
+     "0.909",
+     "—",
+     "0.849",
+     "Transfers",
+     "Mechanism (circuit)"
+    ],
+    [
+     "Ring-block amplitude correlation",
+     "r = 0.984 (EPG/PEN 3 × 3); 0.688 including Δ7",
+     "",
+     "",
+     "",
+     "Invariant across sexes",
+     "Mechanism (circuit)"
+    ],
+    [
+     "Global transitivity T",
+     "0.256",
+     "0.177",
+     "0.269",
+     "0.225",
+     "Female in band; male below parity gate (0.20), reported as registered",
+     "Mechanism (assembly)"
+    ],
+    [
+     "Edge reciprocity",
+     "0.300",
+     "0.299",
+     "0.321",
+     "0.322",
+     "Matched, both sexes (|Δ| ≤ 0.0009)",
+     "Execution (census)"
+    ]
+   ]
+  },
+  {
+   "kind": "h1",
+   "text": "Extended Data legends"
+  },
+  {
+   "kind": "caption",
+   "text": "Extended Data Fig. 1 | Metric distance is a separate, conserved wiring axis. a, Female edge-distance CDF: real edges versus the quota-uniform baseline (2.14× compression of the median); the distance-kernel stage’s median (91.5 µm) exceeds the real 76.1 µm by 20%, a residual confined to the shortest-distance bins (KS 0.030 over the full histogram), and the completed program narrows it to 79.0 µm (Table 1). Female coordinates are arbor representative points, so absolute scales are not comparable to the male; compression ratios and profile shapes are. b, Male quantile profile of edge distance (soma coordinates): generator versus real (KS 0.020). c, Median edge distances on a log scale in both sexes."
+  },
+  {
+   "kind": "caption",
+   "text": "Extended Data Fig. 2 | The completed program ported back to the full male CNS. a, Transitivity under the node-uniform wedge estimator (identical sampler on real and generated graphs): the male full stack reaches 0.177 (12-seed mean) against the male-real 0.256; dotted lines mark the pre-registered parity gates (male 0.20; female 0.19, passed at 0.240). b, The male closure gap by endpoint region — wedge-closure probabilities in the real (grey) and generated (blue) graphs; annotations give the real-to-generated ratio and each block’s share of the total gap. The male connection-derived lattice coordinate is measurably noisier than the female (held-out median error 3.1 versus 1.7 columns; 23.7k versus 43.0k anchors) — though the registered exogenous-coordinate control (Fig. 5d) showed that precision was not the confound, coordinate circularity was. c, Edge reciprocity across module stages for the female (base, +lattice, +dyad, +MUTQ, +trim) and the male (base, full stack, +MUTQ, +trim); dashed and dotted lines mark the two real values. Both pre-registered reciprocity gates (female 0.31; male 0.297) were narrowly missed at the dyad stage, passed with overshoot after mutual-quota transport (female 0.348; male 0.319), and the registered trim module lands both within 0.001 of real (female 0.322; male 0.299)."
+  },
+  {
+   "kind": "caption",
+   "text": "Extended Data Table 1 | Model lineage. Each ladder rung is a canonical generative-model class⟨⟨13,15,39–41⟩⟩; node-uniform transitivity as a fraction of the corrected real value (female 0.269, male 0.256). Held-out edge AUC is scored against same-type negatives; the type-pair quota null scores 0.500 by construction. The lattice rung’s 89% is the share of the real female value attained (0.240/0.269); the 82% quoted in the main text is the fraction of the residual gap closed above the pre-lattice generator, (0.240 − 0.112)/(0.269 − 0.112)."
+  },
+  {
+   "kind": "caption",
+   "text": "Extended Data Table 2 | Third-connectome battery on the hemibrain typed subgraph (19,723 cells, 5,554 types, 3.2 million connections). Gates were pre-specified in the registry before any test was computed (Supplementary Table 1, entries 25–26). G3 was withdrawn before testing: the compact export carries no soma coordinates. G4’s failure matches the coordinate-free component values of both adults (0.548/0.542). G5 uses a three-way-controlled pair set (1,461 shared types, 228,935 pairs); the same-pipeline comparison exceeds the same-sex one. G6’s null is consistent with the columnar-assembly account, whose carrier—the optic lobes—lies outside the hemibrain volume. G7a fits the compass cosine kernel on the hemibrain central complex (six types, 152 cells; transmitter signs transferred from the male by exact type-name match): the aligned Δ7→EPG coupling takes the female sign, as does the whole Δ7 output row, and the full amplitude matrix is closer to the same-sex connectome than to the same-pipeline male—excluding a pipeline artefact for the Δ7 dimorphism. G7b’s intermediate value leaves the EPG noise-floor dimorphism unresolved."
+  }
+ ],
+ "refs": [
+  {
+   "n": 1,
+   "text": "Dorkenwald, S. et al. Neuronal wiring diagram of an adult brain. Nature 634, 124–138 (2024). https://doi.org/10.1038/s41586-024-07558-y"
+  },
+  {
+   "n": 2,
+   "text": "Berg, S. et al. Sexual dimorphism in the complete Drosophila male central nervous system connectome. Cell 189, 5504–5526.e15 (2026). https://doi.org/10.1016/j.cell.2026.08.015"
+  },
+  {
+   "n": 3,
+   "text": "Zheng, Z. et al. A complete electron microscopy volume of the brain of adult Drosophila melanogaster. Cell 174, 730–743.e22 (2018). https://doi.org/10.1016/j.cell.2018.06.019"
+  },
+  {
+   "n": 4,
+   "text": "Schlegel, P. et al. Whole-brain annotation and multi-connectome cell typing of Drosophila. Nature 634, 139–152 (2024). https://doi.org/10.1038/s41586-024-07686-5"
+  },
+  {
+   "n": 5,
+   "text": "Lin, A. et al. Network statistics of the whole-brain connectome of Drosophila. Nature 634, 153–165 (2024). https://doi.org/10.1038/s41586-024-07968-y"
+  },
+  {
+   "n": 6,
+   "text": "Matsliah, A. et al. Neuronal parts list and wiring diagram for a visual system. Nature 634, 166–180 (2024). https://doi.org/10.1038/s41586-024-07981-1"
+  },
+  {
+   "n": 7,
+   "text": "Nern, A. et al. Connectome-driven neural inventory of a complete visual system. Nature 641, 1225–1237 (2025). https://doi.org/10.1038/s41586-025-08746-0"
+  },
+  {
+   "n": 8,
+   "text": "Takemura, S. et al. A connectome of the male Drosophila ventral nerve cord. eLife 13, RP97769 (2024). https://doi.org/10.7554/eLife.97769"
+  },
+  {
+   "n": 9,
+   "text": "Azevedo, A. et al. Connectomic reconstruction of a female Drosophila ventral nerve cord. Nature 631, 360–368 (2024). https://doi.org/10.1038/s41586-024-07389-x"
+  },
+  {
+   "n": 10,
+   "text": "Winding, M. et al. The connectome of an insect brain. Science 379, eadd9330 (2023). https://doi.org/10.1126/science.add9330"
+  },
+  {
+   "n": 11,
+   "text": "Watts, D. J. & Strogatz, S. H. Collective dynamics of ‘small-world’ networks. Nature 393, 440–442 (1998). https://doi.org/10.1038/30918"
+  },
+  {
+   "n": 12,
+   "text": "Barabási, A.-L. & Albert, R. Emergence of scaling in random networks. Science 286, 509–512 (1999). https://doi.org/10.1126/science.286.5439.509"
+  },
+  {
+   "n": 13,
+   "text": "Betzel, R. F. et al. Generative models of the human connectome. NeuroImage 124, 1054–1064 (2016). https://doi.org/10.1016/j.neuroimage.2015.09.041"
+  },
+  {
+   "n": 14,
+   "text": "Vértes, P. E. et al. Simple models of human brain functional networks. Proc. Natl Acad. Sci. USA 109, 5868–5873 (2012). https://doi.org/10.1073/pnas.1111738109"
+  },
+  {
+   "n": 15,
+   "text": "Ercsey-Ravasz, M. et al. A predictive network model of cerebral cortical connectivity based on a distance rule. Neuron 80, 184–197 (2013). https://doi.org/10.1016/j.neuron.2013.07.036"
+  },
+  {
+   "n": 16,
+   "text": "Bassett, D. S. & Sporns, O. Network neuroscience. Nat. Neurosci. 20, 353–364 (2017). https://doi.org/10.1038/nn.4502"
+  },
+  {
+   "n": 17,
+   "text": "Hulse, B. K. et al. A connectome of the Drosophila central complex reveals network motifs suitable for flexible navigation and context-dependent action selection. eLife 10, e66039 (2021). https://doi.org/10.7554/eLife.66039"
+  },
+  {
+   "n": 18,
+   "text": "Caron, S. J. C., Ruta, V., Abbott, L. F. & Axel, R. Random convergence of olfactory inputs in the Drosophila mushroom body. Nature 497, 113–117 (2013). https://doi.org/10.1038/nature12063"
+  },
+  {
+   "n": 19,
+   "text": "Elkahlah, N. A., Rogow, J. A., Ahmed, M. & Clowney, E. J. Presynaptic developmental plasticity allows robust sparse wiring of the Drosophila mushroom body. eLife 9, e52278 (2020). https://doi.org/10.7554/eLife.52278"
+  },
+  {
+   "n": 20,
+   "text": "Bullmore, E. & Sporns, O. The economy of brain network organization. Nat. Rev. Neurosci. 13, 336–349 (2012). https://doi.org/10.1038/nrn3214"
+  },
+  {
+   "n": 21,
+   "text": "Kaiser, M. & Hilgetag, C. C. Nonoptimal component placement, but short processing paths, due to long-distance projections in neural systems. PLoS Comput. Biol. 2, e95 (2006). https://doi.org/10.1371/journal.pcbi.0020095"
+  },
+  {
+   "n": 22,
+   "text": "Chklovskii, D. B. Synaptic connectivity and neuronal morphology: two sides of the same coin. Neuron 43, 609–617 (2004). https://doi.org/10.1016/j.neuron.2004.08.012"
+  },
+  {
+   "n": 23,
+   "text": "Scheffer, L. K. et al. A connectome and analysis of the adult central brain. eLife 9, e57443 (2020). https://doi.org/10.7554/eLife.57443"
+  },
+  {
+   "n": 24,
+   "text": "Seelig, J. D. & Jayaraman, V. Neural dynamics for landmark orientation and angular path integration. Nature 521, 186–191 (2015). https://doi.org/10.1038/nature14446"
+  },
+  {
+   "n": 25,
+   "text": "Kim, S. S., Rouault, H., Druckmann, S. & Jayaraman, V. Ring attractor dynamics in the Drosophila central brain. Science 356, 849–853 (2017). https://doi.org/10.1126/science.aal4835"
+  },
+  {
+   "n": 26,
+   "text": "Kim, S. S., Hermundstad, A. M., Romani, S., Abbott, L. F. & Jayaraman, V. Generation of stable heading representations in diverse visual scenes. Nature 576, 126–131 (2019). https://doi.org/10.1038/s41586-019-1767-1"
+  },
+  {
+   "n": 27,
+   "text": "Green, J. et al. A neural circuit architecture for angular integration in Drosophila. Nature 546, 101–106 (2017). https://doi.org/10.1038/nature22343"
+  },
+  {
+   "n": 28,
+   "text": "Holland, P. W. & Leinhardt, S. Transitivity in structural models of small groups. Comp. Group Stud. 2, 107–124 (1971). https://doi.org/10.1177/104649647100200201"
+  },
+  {
+   "n": 29,
+   "text": "Milo, R. et al. Network motifs: simple building blocks of complex networks. Science 298, 824–827 (2002). https://doi.org/10.1126/science.298.5594.824"
+  },
+  {
+   "n": 30,
+   "text": "Zhu, X., Ghahramani, Z. & Lafferty, J. Semi-supervised learning using Gaussian fields and harmonic functions. In Proc. 20th Int. Conf. on Machine Learning 912–919 (AAAI Press, 2003)."
+  },
+  {
+   "n": 31,
+   "text": "Takemura, S. et al. Synaptic circuits and their variations within different columns in the visual system of Drosophila. Proc. Natl Acad. Sci. USA 112, 13711–13716 (2015). https://doi.org/10.1073/pnas.1509820112"
+  },
+  {
+   "n": 32,
+   "text": "Courgeon, M. & Desplan, C. Coordination between stochastic and deterministic specification in the Drosophila visual system. Science 366, eaay6727 (2019). https://doi.org/10.1126/science.aay6727"
+  },
+  {
+   "n": 33,
+   "text": "Takemura, S. et al. A visual motion detection circuit suggested by Drosophila connectomics. Nature 500, 175–181 (2013). https://doi.org/10.1038/nature12450"
+  },
+  {
+   "n": 34,
+   "text": "Takemura, S. et al. The comprehensive connectome of a neural substrate for ‘ON’ motion detection in Drosophila. eLife 6, e24394 (2017). https://doi.org/10.7554/eLife.24394"
+  },
+  {
+   "n": 35,
+   "text": "Takemura, S., Lu, Z. & Meinertzhagen, I. A. Synaptic circuits of the Drosophila optic lobe: the input terminals to the medulla. J. Comp. Neurol. 509, 493–513 (2008). https://doi.org/10.1002/cne.21757"
+  },
+  {
+   "n": 36,
+   "text": "Lacin, H. & Truman, J. W. Lineage mapping identifies molecular and architectural similarities between the larval and adult Drosophila central nervous system. eLife 5, e13399 (2016). https://doi.org/10.7554/eLife.13399"
+  },
+  {
+   "n": 37,
+   "text": "Bayraktar, O. A. & Doe, C. Q. Combinatorial temporal patterning in progenitors expands neural diversity. Nature 498, 449–455 (2013). https://doi.org/10.1038/nature12266"
+  },
+  {
+   "n": 38,
+   "text": "Blondel, V. D., Guillaume, J.-L., Lambiotte, R. & Lefebvre, E. Fast unfolding of communities in large networks. J. Stat. Mech. 2008, P10008 (2008). https://doi.org/10.1088/1742-5468/2008/10/P10008"
+  },
+  {
+   "n": 39,
+   "text": "Chung, F. & Lu, L. The average distances in random graphs with given expected degrees. Proc. Natl Acad. Sci. USA 99, 15879–15882 (2002). https://doi.org/10.1073/pnas.252631999"
+  },
+  {
+   "n": 40,
+   "text": "Fosdick, B. K., Larremore, D. B., Nishimura, J. & Ugander, J. Configuring random graph models with fixed degree sequences. SIAM Rev. 60, 315–355 (2018). https://doi.org/10.1137/16M1087175"
+  },
+  {
+   "n": 41,
+   "text": "Karrer, B. & Newman, M. E. J. Stochastic blockmodels and community structure in networks. Phys. Rev. E 83, 016107 (2011). https://doi.org/10.1103/PhysRevE.83.016107"
+  },
+  {
+   "n": 42,
+   "text": "Cook, S. J. et al. Whole-animal connectomes of both Caenorhabditis elegans sexes. Nature 571, 63–71 (2019). https://doi.org/10.1038/s41586-019-1352-7"
+  },
+  {
+   "n": 43,
+   "text": "Moran, P. A. P. Notes on continuous stochastic phenomena. Biometrika 37, 17–23 (1950). https://doi.org/10.2307/2332142"
+  },
+  {
+   "n": 44,
+   "text": "Sperry, R. W. Chemoaffinity in the orderly growth of nerve fiber patterns and connections. Proc. Natl Acad. Sci. USA 50, 703–710 (1963). https://doi.org/10.1073/pnas.50.4.703"
+  },
+  {
+   "n": 45,
+   "text": "Song, S., Sjöström, P. J., Reigl, M., Nelson, S. & Chklovskii, D. B. Highly nonrandom features of synaptic connectivity in local cortical circuits. PLoS Biol. 3, e68 (2005). https://doi.org/10.1371/journal.pbio.0030068"
+  },
+  {
+   "n": 46,
+   "text": "Perin, R., Berger, T. K. & Markram, H. A synaptic organizing principle for cortical neuronal groups. Proc. Natl Acad. Sci. USA 108, 5419–5424 (2011). https://doi.org/10.1073/pnas.1016051108"
+  },
+  {
+   "n": 47,
+   "text": "White, J. G., Southgate, E., Thomson, J. N. & Brenner, S. The structure of the nervous system of the nematode Caenorhabditis elegans. Phil. Trans. R. Soc. B 314, 1–340 (1986). https://doi.org/10.1098/rstb.1986.0056"
+  },
+  {
+   "n": 48,
+   "text": "Varshney, L. R., Chen, B. L., Paniagua, E., Hall, D. H. & Chklovskii, D. B. Structural properties of the Caenorhabditis elegans neuronal network. PLoS Comput. Biol. 7, e1001066 (2011). https://doi.org/10.1371/journal.pcbi.1001066"
+  },
+  {
+   "n": 49,
+   "text": "Witvliet, D. et al. Connectomes across development reveal principles of brain maturation. Nature 596, 257–261 (2021). https://doi.org/10.1038/s41586-021-03778-8"
+  },
+  {
+   "n": 50,
+   "text": "Matsliah, A. et al. Codex: Connectome Data Explorer. https://codex.flywire.ai (2023)."
+  },
+  {
+   "n": 51,
+   "text": "Richter, O. & Schneidman, E. Building the connectome of a small brain with a simple stochastic developmental generative model. Proc. Natl. Acad. Sci. U.S.A. 122, e2504913122 (2025). https://doi.org/10.1073/pnas.2504913122"
+  },
+  {
+   "n": 52,
+   "text": "Lappalainen, J. K. et al. Connectome-constrained networks predict neural activity across the fly visual system. Nature 634, 1132–1140 (2024). https://doi.org/10.1038/s41586-024-07939-3"
+  }
+ ],
+ "edt1": [
+  [
+   "Model class",
+   "Transitivity, % of real (female)",
+   "Transitivity, % of real (male)",
+   "Held-out edge AUC (female/male)"
+  ],
+  [
+   "Configuration model (exact degree sequence)",
+   "3%",
+   "3%",
+   "0.548/0.542"
+  ],
+  [
+   "Type-pair quota null (degree-corrected blockmodel)",
+   "27%",
+   "48%",
+   "0.500"
+  ],
+  [
+   "+ Per-cell quotas, activity and distance kernels",
+   "39%",
+   "—",
+   "0.826/0.753"
+  ],
+  [
+   "+ Neuropil-overlap gate",
+   "42%",
+   "—",
+   "—"
+  ],
+  [
+   "+ Lattice quota-fill",
+   "89%",
+   "—",
+   "—"
+  ],
+  [
+   "Completed program",
+   "85%",
+   "69%",
+   "0.858/0.812"
+  ],
+  [
+   "Real connectome",
+   "100%",
+   "100%",
+   "—"
+  ]
+ ],
+ "edt2": [
+  [
+   "Gate",
+   "Metric",
+   "Value",
+   "Threshold",
+   "Verdict"
+  ],
+  [
+   "G1",
+   "Per-type out-degree CV/Poisson, median (535 types)",
+   "1.67",
+   "[1.2, 2.0]",
+   "PASS"
+  ],
+  [
+   "G2a",
+   "Quota-uniform CV/Poisson, median",
+   "0.687",
+   "< 1.0",
+   "PASS"
+  ],
+  [
+   "G2b",
+   "Activity-model restoration of per-type CV, Spearman",
+   "0.911",
+   "≥ 0.7",
+   "PASS"
+  ],
+  [
+   "G3",
+   "Distance-kernel term",
+   "—",
+   "—",
+   "WITHDRAWN"
+  ],
+  [
+   "G4",
+   "Held-out same-type AUC, coordinate-free score",
+   "0.528",
+   "≥ 0.65",
+   "FAIL"
+  ],
+  [
+   "G5",
+   "Quota-rate conservation, hemibrain–FlyWire vs hemibrain–male (Spearman)",
+   "0.433 vs 0.477",
+   "H–F > H–M",
+   "FAIL"
+  ],
+  [
+   "G6",
+   "Closure excess over quota-uniform baseline (node-uniform / wedge-uniform)",
+   "1.18× / 0.99×",
+   "≥ 1.5",
+   "FAIL"
+  ],
+  [
+   "G7a",
+   "CX cosine kernel: hemibrain aligned Δ7→EPG coupling g = a·cosφ",
+   "+2.15 (FlyWire +3.95; male −5.77); Δ7 row 5/5 female-sign; 6×6 matrix r = 0.986 vs 0.869 (same-sex vs same-pipeline)",
+   "Sign arbitration: pipeline artefact vs replicated dimorphism",
+   "Female sign — replicated"
+  ],
+  [
+   "G7b",
+   "EPG out-degree CV / Poisson floor",
+   "1.35 (male 1.11; FlyWire 1.59)",
+   "1.33, log-midpoint of the two adults",
+   "Sex side, marginal"
+  ]
+ ]
+}

@@ -1,0 +1,142 @@
+{
+ "dataset": "HemiBrain v1.2 (exported-traced-adjacencies-v1.2, md5 ec1e076d15442f368fa5978b00f4a61c)",
+ "scope": "traced 21,739 neurons; typed subgraph 19,723 cells / 5,554 types / 3,233,913 typed-typed connections / 13,221,513 synapses",
+ "G1": {
+  "metric": "per-type out-degree CV/Poisson median (n>=5, mean_k>=2; 535 types)",
+  "value": 1.67,
+  "gate": "[1.2,2.0]",
+  "verdict": "PASS"
+ },
+ "G2a": {
+  "metric": "quota-uniform CV/Poisson median",
+  "value": 0.687,
+  "gate": "<1.0",
+  "verdict": "PASS"
+ },
+ "G2b": {
+  "metric": "per-type CV Spearman real vs activity model",
+  "value": 0.911,
+  "gate": ">=0.7",
+  "verdict": "PASS"
+ },
+ "G3": {
+  "verdict": "WITHDRAWN",
+  "reason": "no soma coordinates in compact export"
+ },
+ "G4": {
+  "metric": "held-out same-type AUC, score=p_st*a_out*a_in (coordinate-free)",
+  "value": 0.528,
+  "gate": ">=0.65",
+  "verdict": "FAIL",
+  "note": "trivial-0.5 first protocol logged & superseded; adults coordinate-free activity-only same-type AUC 0.548/0.542; random non-edge AUC 0.886"
+ },
+ "G5": {
+  "metric": "type-pair quota-rate conservation",
+  "uncontrolled": {
+   "HF": 0.3486,
+   "HM": 0.3404
+  },
+  "controlled_3way": {
+   "shared_types": 1461,
+   "pairs": 228935,
+   "Spearman_HF": 0.4332,
+   "Spearman_HM": 0.4772,
+   "Spearman_FM": 0.4269,
+   "PearsonLog_HF": 0.6852,
+   "PearsonLog_HM": 0.7095,
+   "PearsonLog_FM": 0.754
+  },
+  "verdict": "FAIL",
+  "note": "uncontrolled PASS reversed after pair-set control; same-pipeline (H-M) > same-sex (H-F)"
+ },
+ "G6": {
+  "metric": "transitivity excess vs quota-uniform",
+  "node_uniform": {
+   "real": 0.322,
+   "qu": 0.2735,
+   "ratio": 1.18
+  },
+  "wedge_uniform": {
+   "real": 0.215,
+   "qu": 0.2176,
+   "ratio": 0.99
+  },
+  "gate": ">=1.5",
+  "verdict": "FAIL",
+  "note": "hemibrain volume excludes optic lobes; consistent with lattice (visual-system) localization of gamma"
+ },
+ "G7a": {
+  "metric": "CX cosine-kernel fit, gauge-invariant aligned coupling g = a*cos(phi) for Delta7->EPG",
+  "a_EPG_D7": 2.155,
+  "phi_EPG_D7": -0.0785,
+  "g_EPG_D7": 2.1484,
+  "reference": {
+   "male_g": -5.7663,
+   "female_g": 3.9499
+  },
+  "verdict": "REPLICATED (g>0, female sign; pipeline-artifact explanation excluded)",
+  "delta7_row_g": {
+   "Delta7->EPG": [
+    2.15,
+    3.95,
+    -5.77
+   ],
+   "Delta7->EPGt": [
+    32.73,
+    29.05,
+    -7.86
+   ],
+   "Delta7->PEG": [
+    4.02,
+    3.53,
+    -7.58
+   ],
+   "Delta7->PEN_a": [
+    1.13,
+    1.0,
+    -0.86
+   ],
+   "Delta7->PEN_b": [
+    1.54,
+    1.33,
+    -1.09
+   ],
+   "_order": [
+    "hemibrain",
+    "female",
+    "male"
+   ]
+  },
+  "amplitude_corr": {
+   "3x3_raw_HM": 0.9831,
+   "3x3_raw_HF": 0.9484,
+   "6x6_g_HM": 0.8687,
+   "6x6_g_HF": 0.9861
+  },
+  "heldout": {
+   "AUC": 0.8839,
+   "type_baseline_AUC": 0.7472,
+   "wcorr": 0.7336
+  },
+  "model_race": {
+   "M1_ring": 0.8839,
+   "M2_euclid2d": 0.8848,
+   "M4_linear": 0.8498,
+   "M5_scrambled": 0.7173,
+   "M0_type": 0.7472,
+   "M3_dotprod": 0.6518
+  },
+  "note": "ring ties 2D-Euclidean within 0.001 (Euclidean-on-ring mimics angular kernel); EPG phase-order |tau|=0.387 (orientation arbitrary; adult male ~0)"
+ },
+ "G7b": {
+  "metric": "EPG out-degree CV / Poisson floor (69_cellcv convention)",
+  "value": 1.346,
+  "n": 46,
+  "mean_od": 254.26,
+  "cv": 0.0844,
+  "floor": 0.0627,
+  "gate": "log-midpoint of male 1.11 and female 1.59 = 1.328",
+  "verdict": "marginally sex-side (1.346 > 1.328); value hugs the boundary (53.7% log-position); male 1.11 remains the only sub-1.3 value",
+  "script": "154_cx_hemibrain.py (G7a) / inline from hb_graph.npz (G7b)"
+ }
+}

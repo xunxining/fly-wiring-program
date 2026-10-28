@@ -1,0 +1,490 @@
+{
+ "body": [
+  {
+   "kind": "sititle",
+   "text": "Supplementary Information"
+  },
+  {
+   "kind": "meta",
+   "text": "The wiring program of a fly brain"
+  },
+  {
+   "kind": "meta",
+   "text": "Xining Xun¹, Hang Fan², Tianyi Hao¹ — ¹Tsingjiao Information Science (Beijing) Co., Ltd.; ²School of Economics and Management, North China Electric Power University"
+  },
+  {
+   "kind": "mp",
+   "text": "Reference numbers in this supplement cite the main-text reference list. Section symbols (§) in the registry ledger point to the timestamped project log archived at the repository given in Data availability."
+  },
+  {
+   "kind": "h1",
+   "text": "Supplementary Methods"
+  },
+  {
+   "kind": "h3",
+   "text": "Neuropil-overlap module"
+  },
+  {
+   "kind": "mp",
+   "text": "Each neuron was summarized by presynaptic and postsynaptic bit masks over neuropils (79 female, 146 male) from synapse-level tables (22,285,323 FlyWire connections; 124,039,080 MaleCNS synapses)⟨⟨1,2⟩⟩. Diagnostics: zero-overlap placement fractions versus type-matched random rewiring (10⁶ samples); wedge-closure probability stratified by endpoint overlap (300,000 wedges); co-localization of closed triangles to a single neuropil (60,000 trials). The module gates candidate targets on nonzero overlap between the source’s output mask and the target’s input mask, optionally weighted by min(overlap, 8)^β with per-row normalized rejection bounds. Registered outcomes: the gate raised full-stack female T from 0.1045 to 0.1123 (prediction 0.13–0.16; rejected as carrier of γ), and overlap weighting with exponents up to 2 added nothing further, with guards (exact edge count, out-degree KS 0) intact."
+  },
+  {
+   "kind": "h3",
+   "text": "The lattice module"
+  },
+  {
+   "kind": "mp",
+   "text": "Coordinates. 43,182 medulla columnar cells (31 types) carry hex-column anchor coordinates from the FlyWire column assignment. A harmonic (Dirichlet) extension⟨⟨30⟩⟩ propagated coordinates over the visual-subsystem adjacency graph using a fixed random 90% of edges; the held-out 10% served exclusively for validation. Coverage is 99.9% of optic cells and 98–100% of other visual classes; held-out anchors land a median 1.7 columns from their true coordinates, and hemisphere assignment is exact. Offset distributions. For each ordered type pair with at least 200 fit edges (8,434 pairs, covering 77% of eligible edges) we tabulated the empirical distribution of lattice offsets on a 41 × 41 grid plus overflow and cross-hemisphere bins, shrunk toward the global offset histogram (κ = 25). Real cross-hemisphere edges are 1.4% of covered pairs. Quota-fill placement. For each quota edge of a covered pair, the target position is the source cell’s coordinate plus the pair’s modal offset; the quota is filled by the nearest available same-hemisphere target-type cells at that position. Pairs with overflow or cross-hemisphere modes, and cells without coordinates (7.0% of edges), fall back to the distance-kernel sampler. Controls. All coordinates, offset tables and kernels were estimated on the 90% fit split only. Permuting coordinates among cells leaves T = 0.221 (−0.018); substituting continuous uniform random positions leaves T = 0.235 (−0.004). The male port built the lattice identically from 23,720 male medulla columnar anchors (held-out error median 3.1 columns; coverage 99.8–100% of visual superclasses; 8,439 offset tables covering 82% of eligible edges)."
+  },
+  {
+   "kind": "h3",
+   "text": "Dyad modules and per-cell mutual quotas"
+  },
+  {
+   "kind": "mp",
+   "text": "Census quantities. For each ordered type pair we tabulated the number Rₛₜ of mutual edges (the table is symmetric by construction) and, for each real edge, whether the target holds out-quota toward the source’s type (true of 60.8% of real edges). Real per-pair reciprocity is heavy-tailed: 64.9% of realized pairs have no mutual edge; the remainder average a mutual share of 0.28. Modules. DYAD1 (repair) retargets non-mutual edges of each source cell onto that source’s already-placed reverse partners to make up the deficit against Rₛₜ; DYAD2 (prospective) preferentially routes placements to targets holding reciprocity potential at the pair’s empirical fraction. Both use only census- and quota-layer information. MUTQ. For each cell whose mutual count falls short of its real-graph quota mᵢ, non-mutual out-edges are retargeted onto type-matched cells whose reverse edge is already placed, collision-free, leaving edge counts, out-degrees and weights invariant by construction; candidates are chosen by minimal change in edge distance. 540,886 retargets over 58,579 cells raise female reciprocity from 0.2974 to 0.3481; 768,388 over 80,692 cells raise male reciprocity from 0.2616 to 0.3191; both pre-registered gates passed with all guards intact. The male result (0.3191) exceeds a pre-registered analytic pre-check bound (0.2845) that ignored surplus retention; the bound is not an upper bound and the corresponding falsification is revoked. P8e trim. Each cell holding surplus mutual edges over its quota is trimmed onto type-matched non-adjacent cells (non-mutual by construction), pairs holding surplus at both endpoints trimmed first; reopened deficits are re-filled by MUTQ transport. Female: 340,757 trims and 65,253 re-fills land at 0.3222 (real 0.3213); male: 353,404 trims and 76,753 re-fills land at 0.2991 (real 0.2998). The sequence of undershoot and exact return is the design’s registered analytic identity. The distance-faithful trim eroded female transitivity to 0.215, five thousandths below its registered band; a closure-greedy repair recovered only a quarter of the erosion, and an assembly-faithful variant, drawing candidates from each type pair’s modal lattice offset, restored transitivity to 0.225 with reciprocity unchanged (0.3220) and all guards intact. The final female flagship is this state."
+  },
+  {
+   "kind": "h3",
+   "text": "Cross-sex kernel conservation and circularity controls"
+  },
+  {
+   "kind": "mp",
+   "text": "Exogenous male lattice. The male optic-lobe lattice was rebuilt without any use of the connectome’s edges: columnar anchor types were placed from soma positions, per-eye columnar axes fitted to measured optic-lobe geometry, and coordinates propagated with connection-free boundary conditions (hexagonality 0.912; held-out placement error 0.90 columns, versus 1.7 for the female harmonic-extension lattice and 3.1 for the male connection-derived predecessor). Conservation protocol. Female offset fields were harmonized to male lattice spacing by a contraction factor 0.752 estimated from shared columnar type pairs. Agreement was scored under all twelve dihedral symmetry transforms, with gates registered before evaluation on a validation panel disjoint from the selection panel: peak-offset agreement 0.687 versus a best-of-twelve shuffle-null p99 of 0.672 (500 replicates), and median offset-density correlation 0.610 versus null p99 0.201. A hemisphere-conditioned follow-up resolved the selection panel’s rotation preference as a pooling artefact: right-eye pairs peak at the axis-swap reflection and left-eye pairs at the 180° rotation in both panels (selection-panel left eye 29/29 pairs), and the final per-hemisphere test confirmed alignment above its own null. Exogenous-coordinate control. The full male stack was re-run byte-identically except for substituting the exogenous coordinates and derived kernels: transitivity fell from 0.182 to 0.137 and the optic–optic deficit widened from 1.29- to 2.07-fold, both registered improvement gates failing; all guards passed. A permutation control (coordinates shuffled among optic cells, all else identical) removed 0.020 of the 0.041 drop (per-seed share 0.45–0.50), attributing about half of the fall to coordinate–connectivity circularity. Ventral-cord diagnostics. Four registered rounds conditioned nerve-cord wedges on hemilineage co-membership (parsed from nomenclature; 35 lineages), hemilineage × neuromere cohorts, soma distance, circuit-class pairs, synaptic-strength class and Louvain communities⟨⟨38⟩⟩ of the real subgraph (10 communities, Q = 0.692), each with label-permutation nulls. Real-graph enrichment was modest on every axis (1.40–2.01-fold) and equalled or exceeded by the generator (1.57–2.43-fold), leaving a uniform two-fold deficit with no measured carrier."
+  },
+  {
+   "kind": "h3",
+   "text": "Quota derivability test (P19)"
+  },
+  {
+   "kind": "p",
+   "text": "P19 asked whether per-cell connection budgets can be predicted from developmental annotations rather than read from the connectome. Male cells carried three usable annotations—fine cell type, hemilineage (itoleeHl, or trumanHl for ventral-cord types) and soma position; morphology is not available in current annotations and was not tested. On the primary population (51,890 cells with lineage and soma coordinates), five-fold cell-held-out prediction of budget size reached R² = 0.096 (type means), unchanged by adding lineage (−0.0000, exactly on the 50-permutation null) and gaining ≤0.005 from spatial neighbours; on all positioned cells (138,556), type plus position reached 0.230. For budget allocation (7,135,951 non-zero quota entries), type means reached R² = 0.499 and the full ladder 0.503, a beyond-type marginal of 0.004. Both pre-registered gates (§140 of the research log) failed: the budgets are read, not derived, and their developmental origin is an open question."
+  },
+  {
+   "kind": "h3",
+   "text": "Third-connectome battery (HemiBrain v1.2)"
+  },
+  {
+   "kind": "mp",
+   "text": "Data and scope. The hemibrain analysis used the v1.2 exported traced adjacencies (traced-neurons.csv and traced-total-connections.csv; tarball MD5 ec1e076d15442f368fa5978b00f4a61c). The typed subgraph spans 19,723 cells of 5,554 types with 3,233,913 typed–typed connections (13,221,513 synapses). The compact export carries no soma coordinates, so the distance-kernel gate (G3) was withdrawn before testing; all other gates used coordinate-free quantities. Cross-dataset type correspondence used exact string matching under the shared Janelia nomenclature and was frozen before any test: hemibrain ∩ male = 3,790 types, hemibrain ∩ FlyWire = 2,954, three-way = 2,787. Degree execution (G1, G2). Per-type out-degree dispersion used types with ≥5 cells and type-mean out-degree ≥2 (535 types). The quota-uniform baseline places each directed type pair’s connection quota uniformly among its cell pairs without replacement; the activity model fits a per-cell factor a_i = k_i / type mean and executes degrees as Poisson(a_i × type mean); per-type CV agreement is Spearman across the same 535 types. Held-out prediction (G4). Edges were split 90/10 at random (seed 11) and all score components were estimated on training edges only: type-pair rates p_st = C_st/(n_s·n_t) and per-cell out- and in-activity. Evaluation drew 200,000 held-out edges (seed 12) with two negative classes—same-type (same source cell, same target type, validated non-edge in the full graph; 50-proposal budget, 132,185 realized) and random non-edge—and scored p_st × a_out × a_in by Mann–Whitney rank AUC. A first protocol version without the target-side activity term is trivially 0.5 on same-type negatives (positives and negatives share source cell and target type) and was superseded by a registered correction before the reported run. Quota-rate conservation (G5). The controlled vocabulary comprises the 1,461 three-way-shared types with ≥2 cells per side in every dataset; the pair set is the union of ordered type pairs with non-zero quota in any dataset (228,935 pairs). Per-cell-pair quota rates C_st/(n_s·n_t) were compared by Spearman on raw rates and by Pearson on log1p rates. Closure (G6). Transitivity was estimated on the symmetrized undirected projection with the node-uniform wedge estimator (500,000 wedges per seed, seeds 1–12; centres uniform among degree ≥2 nodes, two distinct neighbours drawn uniformly), the wedge-uniform sampler reported alongside; the quota-uniform baseline graph was generated as in G2. Compass kernel (G7a). The six central-complex types were extracted from the typed subgraph (EPG 46, Delta7 42, PEN_b 22, PEN_a 20, PEG 18, EPGt 4 cells; 152 in total) and fitted with the adult cosine-kernel pipeline ported line-by-line (script 154_cx_hemibrain.py): spectral hot start from the graph Laplacian eigenvectors, Adam optimization (learning rate 0.03, 4,000 rounds) of amplitudes and phases, a 96-grid phase scan with continuous refinement in the winning half-grid interval, and an 800-round refit; transmitter signs were transferred from the male by exact type-name match (Delta7 glutamatergic, the other five types cholinergic—the male carries a single transmitter value per type). Because the fit has a per-edge gauge freedom (a, φ) ≡ (−a, φ+π), the comparable cross-dataset readout is the aligned coupling g = a·cosφ (registered correction, §151); raw amplitudes agree within gauge branches only. The model race (type-level baseline, cosine ring, two-dimensional Euclidean, dot-product K = 4, one-dimensional linear, θ-shuffle seed 7) was scored by held-out Mann–Whitney AUC exactly as in the adult fits. EPG noise floor (G7b). The EPG out-degree CV over its Poisson floor was computed as in G1 (46 cells) and compared against the pre-registered log-scale midpoint (1.33) of the male (1.11) and FlyWire (1.59) values."
+  },
+  {
+   "kind": "h1",
+   "text": "Supplementary Notes: errata"
+  },
+  {
+   "kind": "h3",
+   "text": "Note 1. Female reference transitivity misquotation"
+  },
+  {
+   "kind": "mp",
+   "text": "The female real transitivity had been recorded as 0.257—the male value—and propagated into the abstract and figures of earlier versions. The twelve-seed re-measurement gives 0.26949 ± 0.00022, confirmed by an independent bounded-enumeration estimator (0.27238 ± 0.0005) and by variants excluding unlabelled cells or thresholding synaptic weight. Consequences: the lattice stage closes 82% of the female residual gap rather than reaching parity, and the pre-registered female band [0.22, 0.26], registered around the misquoted value, no longer brackets the real graph. Gates are reported as registered; male-side quantities are unaffected."
+  },
+  {
+   "kind": "h3",
+   "text": "Note 2. Defective negative sampler in held-out edge prediction"
+  },
+  {
+   "kind": "mp",
+   "text": "The first version drew same-type negatives by uniform proposal over all cells; for the 86–89% of held-out edges whose target type is small, no match was found within the proposal budget and a single fallback cell silently served as the negative (measured by exact re-execution). All within-pair AUCs from that run (full 0.947 female / 0.942 male) are superseded. The corrected sampler draws uniformly within the target type’s member bucket, verifies non-adjacency in the full graph, and excludes test items without a valid negative (final n = 189,164 female, 186,286 male); every other component is byte-identical. Corrected same-type AUCs (female/male): quota 0.500/0.500 by construction, activity 0.548/0.542, distance 0.826/0.753, lattice 0.667/0.668, full 0.858/0.812; random-negative AUCs 0.985/0.987. The correction reverses the initial division-of-labour reading for the within-pair task: position terms, not quotas, carry the discrimination."
+  },
+  {
+   "kind": "h3",
+   "text": "Note 3. Revoked analytic pre-check bound for mutual-quota transport (P8d)"
+  },
+  {
+   "kind": "mp",
+   "text": "The male mutual-quota transport result (0.3191) exceeds a pre-registered analytic pre-check bound (0.2845) that ignored surplus retention; the bound is not an upper bound and the corresponding falsification is revoked. Dyad-stage counters had also attributed the residual deficit to exhausted reverse-partner pools; transport adds no partners and still closes the deficit, so the pools were under-exploited, not exhausted."
+  },
+  {
+   "kind": "h3",
+   "text": "Note 4. Revoked coordinate-quality attribution (P9b)"
+  },
+  {
+   "kind": "mp",
+   "text": "An earlier reading attributed the male transitivity residual to the quality of the learned male lattice coordinates. The registered exogenous-coordinate control—the full male stack re-run byte-identically on a lattice rebuilt without any use of the connectome’s edges—lowered transitivity from 0.177 to 0.137 (twelve-seed means) instead of raising it, failing both registered improvement gates; coordinate quality was not the confound. A permutation control attributes about half of the 0.041 drop to coordinate–connectivity circularity and the rest to kernel and geometry statistics of the exogenous coordinates."
+  },
+  {
+   "kind": "h3",
+   "text": "Note 5. Tied-rank correction in the synthetic-scorer recovery test (P11)"
+  },
+  {
+   "kind": "mp",
+   "text": "An early held-out recovery test of the synthetic scorer failed its gate; a tied-rank correction in the AUC computation left the verdict intact and strengthened it (corrected synthetic 0.613 < distance baseline 0.633)."
+  },
+  {
+   "kind": "h3",
+   "text": "Note 6. Grid-snap correction in the latent-phase refinement (CX module)"
+  },
+  {
+   "kind": "mp",
+   "text": "The phase-refinement step of the latent-angle model originally snapped each cell’s phase to a 96-point grid (a linspace residue), leaving the 46 EPG cells with 44 unique phases and two exactly tied pairs. The refinement now combines the grid scan with continuous optimization within the winning half-grid interval, yielding 46 unique phases (minimum gap 0.0219 rad). Held-out metrics are essentially unchanged and the model ranking is untouched: male AUC 0.909 (was 0.906), weighted-count correlation 0.75 (was 0.73), two-dimensional Euclidean 0.879 (was 0.880), linear 0.849 (was 0.856), inner product 0.751 (unchanged); female AUC 0.849 and both type-level baselines are unchanged. A separate defect in the true-theta CX evaluation script (a misspelled column name silently swallowed by a broad except clause) meant its real-data arm had never produced output; the arm now runs and reports R² = 0.597 (0.706 with the degree term). No verdict in the registry ledger is affected."
+  },
+  {
+   "kind": "h3",
+   "text": "Note 7. Ring-dynamics readout: equivalent-kernel bump evidence and the instance-level caveat"
+  },
+  {
+   "kind": "mp",
+   "text": "The dynamics claim in the main text is scoped to a rate-model readout of the 46 × 46 equivalent EPG kernel (real wiring, or the kernel regenerated from the fitted latent-angle parameters; row-normalized tanh dynamics, local drive withdrawn after 20τ, population-vector resultant (MRA) read against the kernel’s spectral ring order). In this readout the real kernel sustains a self-maintained bump (MRA 0.50 at gain 2), the regenerated kernel sustains a bump of 0.36, and type-level controls sit at 0.12, the chance level; degree- and sign-preserved rewiring reaches at most 0.23. The bump exists only in a finite gain window: at gains of 4 and above, every arm saturates to spatially uniform activity. Rings regenerated at S-fold EPG counts keep a bump that tracks a rotating drive, the circular RMS error falling from 0.98 ± 0.13 rad at S = 1 to 0.36 ± 0.07 rad at S = 8 and saturating thereafter (0.37 ± 0.05 rad at S = 16). Two caveats are reported for completeness. First, MRA read against each arm’s own extracted ring order carries an arm-specific floor—the phasor mean of the extracted phases, 0.181 for the real instance-level order—because perfectly uniform activity scores exactly that floor; values at or below it do not indicate a bump. Second, in the full 152-cell central-complex circuit with signed transmitter weights under spectral-radius gain normalization, post-drive activity is spatially broad rather than localized (normalized Shannon entropy of the EPG activity distribution 0.999, effectively all 46 EPG cells active, MRA 0.152 at gain 1.3 against the 0.181 floor; degree- and sign-matched rewiring 0.227, type-level control 0.185): the full-circuit rate model does not resolve a localized bump, so the main-text claim rests on the equivalent-kernel readout only. A hand-built ideal ring (Amari form) included as a fourth arm collapsed under the same spectral-radius normalization (MRA = 0 at all tested gains) and serves as a negative control."
+  },
+  {
+   "kind": "h1",
+   "text": "Supplementary Tables"
+  },
+  {
+   "kind": "stable",
+   "caption": "Supplementary Table 1 | Registered falsification ledger. Twenty-six experiments were pre-registered with gates fixed before execution (entry 20b is a registered follow-up arm of entry 20); verdicts are reported without exception, including every failure. Section signs (§) refer to the research log. The audit errata that supersede two earlier headline numbers are listed in Supplementary Notes.",
+   "widths": [
+    380,
+    2100,
+    900,
+    1900,
+    1500,
+    1300,
+    1000
+   ],
+   "rows": [
+    [
+     "#",
+     "Experiment",
+     "Registered",
+     "Gate",
+     "Verdict",
+     "Key numbers",
+     "§"
+    ],
+    [
+     "1",
+     "Six mechanism families for γ (reciprocity / homophily / activity / soma geometry, etc.)",
+     "2026-09-25",
+     "each family must explain the major share of the γ gap",
+     "FAIL (all six)",
+     "tested mechanisms together explain only 15–25% (≤ 1/4) of the closure excess",
+     "§21, §24.4"
+    ],
+    [
+     "2",
+     "Reciprocal-quota 2.8^k compound prediction",
+     "2026-09-25",
+     "after reciprocity repair, triad deficits must collapse to ~1",
+     "partially falsified (the falsification isolated the next mechanism)",
+     "P(mutual | conn) = 0.176",
+     "§18"
+    ],
+    [
+     "3",
+     "NPOV neuropil-overlap registered test",
+     "2026-09-26",
+     "overlap gating + weighting should lift T to the real value",
+     "falsified (generative side failed; diagnostic side holds)",
+     "T 0.1045 → 0.1123; zero-overlap placements 34.5% / 27.9%",
+     "§26"
+    ],
+    [
+     "4",
+     "P5 optic-lobe lattice module",
+     "2026-09-26",
+     "soft kernel T ≥ 0.19 (failed) → direct-fill variant (passed)",
+     "soft kernel FAIL; direct fill PASS",
+     "T 0.112 → 0.240; optic-lobe gap 5.0× → 1.08×",
+     "§28/§29"
+    ],
+    [
+     "5",
+     "P7 random-position control",
+     "2026-09-26",
+     "continuous uniform coordinates + real Δ distribution",
+     "control holds (the mechanism needs only offset statistics + local fill)",
+     "T = 0.235",
+     "§30"
+    ],
+    [
+     "6",
+     "P8 DYAD reciprocity module",
+     "2026-09-26",
+     "recip ≥ 0.31 (female)",
+     "both gates missed (0.289 / 0.299); attributed to per-cell quotas",
+     "female closure repair 66.8%",
+     "§31"
+    ],
+    [
+     "7",
+     "P11 held-out edge recovery (Proposition C)",
+     "2026-09-28",
+     "synthetic-scorer AUC gate (c)",
+     "fatal; verdict strengthened after the tied-rank erratum",
+     "corrected synthetic 0.613 < distance baseline 0.633",
+     "§33a–c"
+    ],
+    [
+     "8",
+     "P8d MUTQ per-cell mutual quotas",
+     "2026-10-03",
+     "recip ≥ 0.31 (f) / ≥ 0.297 (m) + 8 guardrails",
+     "PASS both sexes; pre-check ceiling erratum (pool not exhausted)",
+     "0.297 → 0.348 / 0.262 → 0.319",
+     "§35/§35b"
+    ],
+    [
+     "9",
+     "P8e surplus trimming",
+     "2026-10-04",
+     "|gen − real| ≤ 0.005",
+     "primary gate PASS both sexes",
+     "0.3222 / 0.2991 (|Δ| ≤ 0.0009)",
+     "§36/§36b"
+    ],
+    [
+     "10",
+     "P8f T-preserving trim (distance-faithful)",
+     "2026-10-04",
+     "T ∈ [0.22, 0.26] and recip gate",
+     "primary gate FAIL (T = 0.2187, short by 0.0013)",
+     "failure mode = lattice-column misalignment",
+     "§38/§38b"
+    ],
+    [
+     "11",
+     "P8g assembly-faithful trim",
+     "2026-10-04",
+     "same gates as P8f",
+     "both conditions + guardrails 8/8 PASS → female flagship g_mutq4",
+     "T = 0.225, recip 0.3220",
+     "§39/§39b"
+    ],
+    [
+     "12",
+     "P9a male coordinate completion M1",
+     "2026-10-04",
+     "held-out error gates (median ≤ 2.0 hex; P(≤1) ≥ 0.22)",
+     "PASS (male coordinates surpass the female reference); three-version execution history logged",
+     "held-out median 3.071 → 0.912 hex; female reference 1.66",
+     "§40/§40b"
+    ],
+    [
+     "13",
+     "P9a kernel conservation M2",
+     "2026-10-04 (four registered refinements)",
+     "peak concordance ≥ 0.60 and > best-of-12 null p99",
+     "PASS (0.687 > 0.672)",
+     "per-hemisphere convention split: right-eye reflection #6 / left-eye rotation #3",
+     "§40c–g"
+    ],
+    [
+     "14",
+     "P9b exogenous-coordinate control",
+     "2026-10-04",
+     "T ≥ 0.20 (parity) plus a second gate",
+     "double FAIL (T = 0.137) → circularity attribution launched",
+     "old-coordinate advantage shown to be partly artifact",
+     "§41/§42"
+    ],
+    [
+     "15",
+     "P9d shuffle control",
+     "2026-10-04",
+     "C vs C* = 0.0205 decides H1/H2",
+     "boundary (C = 0.0204 / 0.0209, straddling the line)",
+     "refined C/Δ = 0.466 ± paired SE; circularity ≈ half of the drop",
+     "§44/§45/§60"
+    ],
+    [
+     "16",
+     "VNC half-lineage carriers",
+     "2026-10-04",
+     "E_real ≥ 2.0 and two further gates",
+     "all three FAIL (E_real 1.40; E_gen 1.57 over-produced)",
+     "—",
+     "§47/§48"
+    ],
+    [
+     "17",
+     "Soma position / HL×AP carriers",
+     "2026-10-04",
+     "decay-ratio / gap-share gates",
+     "both FAIL; the gap found to favour long range",
+     "real 2.14× vs gen 3.64×",
+     "§49/§50"
+    ],
+    [
+     "18",
+     "Circuit class / strength carriers",
+     "2026-10-04",
+     "class-concentration / strength gates",
+     "both FAIL (uniform 1.99–2.26×)",
+     "IN-EFF exception 1.37×",
+     "§51/§52"
+    ],
+    [
+     "19",
+     "Louvain-community carriers",
+     "2026-10-04",
+     "E_real ≥ 3.0 and two further gates",
+     "all FAIL (2.01 < 3.0; gen 2.43 over-produced)",
+     "conclusion: uniform multiplicative residual",
+     "§53/§54"
+    ],
+    [
+     "20",
+     "P10 edge-level held-out prediction",
+     "2026-10-05",
+     "G1 AUC ≥ 0.65; G2 full − q_dist ≥ 0.05; G3 guardrails",
+     "initially G1/G3 pass, G2 fail; re-adjudicated after the sampler erratum: G1/G3 pass, G2 female fail / male pass (split)",
+     "corrected full 0.858 / 0.812 (old 0.947 / 0.942 superseded)",
+     "§57/§58/§71/§72"
+    ],
+    [
+     "20b",
+     "Cross-sex parameter swap (registered follow-up arm of entry 20)",
+     "2026-10-05",
+     "G1 drop ≤ 0.02 both directions; G2 vocabulary coverage ≥ 60%",
+     "G1 both PASS, G2 FAIL → partially supported",
+     "drops 0.016 / 0.008; coverage 41% / 36%",
+     "§70/§73"
+    ],
+    [
+     "21",
+     "Biological identity of the activity factor",
+     "2026-10-05",
+     "G1–G4 (η² / gradient / Moran / arbor)",
+     "G1, G3 PASS; G2, G4 FAIL (T1 degeneration fix logged as-is)",
+     "quota lineage η² = 0.147; Moran 0.09 / 0.29",
+     "§61/§62"
+    ],
+    [
+     "22",
+     "Model-ladder genealogy",
+     "2026-10-05",
+     "no gate (reference computation)",
+     "configuration T = 0.008 / 0.007 (3%); SBM 27% / 48%; combined 89%",
+     "Table 3",
+     "§64/§65"
+    ],
+    [
+     "23",
+     "Statistical-rigour battery",
+     "2026-10-05",
+     "no gate (audit)",
+     "all headlines ± 0.0002 SE; caught the female-T erratum 0.257 → 0.2695",
+     "C/Δ = 0.466",
+     "§60"
+    ],
+    [
+     "24",
+     "Quota derivability (P19): type / lineage / position → budget",
+     "2026-10-14",
+     "G1 held-out R² ≥ 0.80 for budget size; G2 R² ≥ 0.50 and ΔR² ≥ 0.05 for allocation; 50-permutation lineage guard",
+     "both gates FAIL — budget size R² = 0.096 / 0.226, lineage marginal −0.0000 (= permutation null); allocation R² = 0.503 passes the line but the beyond-type marginal is 0.004 < 0.05",
+     "type carries half of allocation; size nearly underivable → budgets are read, not derived; origin open",
+     "§140/§141"
+    ],
+    [
+     "25",
+     "Third-connectome battery (HemiBrain v1.2)",
+     "2026-10-27",
+     "G1 CV/Poisson median in [1.2, 2.0]; G2a quota-uniform < 1.0; G2b activity Spearman ≥ 0.7; G3 distance term (withdrawn pre-test: export carries no coordinates); G4 held-out same-type AUC ≥ 0.65; G5 hemibrain–FlyWire > hemibrain–male on a three-way-controlled pair set; G6 closure excess ≥ 1.5",
+     "4 PASS / 3 FAIL / 1 withdrawn",
+     "G1 1.67; G2a 0.687; G2b 0.911; G4 0.528 (adult coordinate-free 0.548/0.542); G5 0.433 vs 0.477 (1,461 shared types, 228,935 pairs); G6 1.18× / 0.99×",
+     "§150"
+    ],
+    [
+     "26",
+     "HemiBrain CX kernel and EPG noise floor (G7a/G7b)",
+     "2026-10-27",
+     "G7a: sign of the hemibrain aligned Δ7→EPG coupling g = a·cosφ arbitrates pipeline artefact (male sign) versus replicated dimorphism (female sign); G7b: hemibrain EPG CV/Poisson against the pre-registered log-midpoint 1.33 of the two adults assigns sex side or pipeline side",
+     "G7a female sign — replicated; G7b sex side, marginal",
+     "g = +2.15 (FlyWire +3.95; male −5.77); Δ7 output row 5/5 female-sign; 6×6 g-space H–F 0.986 vs H–M 0.869; 3×3 ring block H–M 0.983 / H–F 0.948; G7b 1.35 (male 1.11, FlyWire 1.59)",
+     "§151"
+    ]
+   ]
+  },
+  {
+   "kind": "stable",
+   "caption": "Supplementary Table 2 | Audit errata. Eight corrections issued by the post-hoc statistical audit; earlier values are superseded wherever they appeared.",
+   "widths": [
+    420,
+    2200,
+    1750,
+    1750,
+    2100,
+    780
+   ],
+   "rows": [
+    [
+     "#",
+     "Item",
+     "Earlier (superseded)",
+     "Corrected",
+     "Consequence",
+     "§"
+    ],
+    [
+     "1",
+     "Female reference transitivity (P8 series)",
+     "0.257",
+     "0.2695 (cache key typo, +4.9%)",
+     "P8g flagship 0.225 now reads as 84% of real (was 88%)",
+     "§60"
+    ],
+    [
+     "2",
+     "P10 negative sampler (held-out AUC)",
+     "0.947 / 0.942 (female / male)",
+     "0.858 / 0.812",
+     "PASS verdict unchanged; §72",
+     "§71"
+    ],
+    [
+     "3",
+     "P8d pre-registration test",
+     "mutual-priority ceiling",
+     "ceiling claim withdrawn",
+     "quota pools never exhausted",
+     "§35b"
+    ],
+    [
+     "4",
+     "P9b attribution",
+     "male T-gap blamed on learned coordinate quality",
+     "attribution revoked by the exogenous-coordinate control",
+     "coordinates improved 3.07 → 0.912 columns yet the optic gap worsened 1.29× → 2.07× (T = 0.137)",
+     "§42"
+    ],
+    [
+     "5",
+     "P11 synthetic-scorer AUC (tied ranks)",
+     "argsort ranking without average ranks for ties",
+     "average-rank correction applied",
+     "corrected synthetic 0.613 < distance baseline 0.633; verdict unchanged and strengthened",
+     "§33c"
+    ],
+    [
+     "6",
+     "CX latent-phase refinement grid snap (96-point linspace residue)",
+     "phases snapped to grid: 44 unique EPG phases, 2 tied pairs",
+     "grid scan + continuous refinement: 46 unique phases, min gap 0.0219 rad",
+     "male AUC 0.906 → 0.909, wcorr 0.73 → 0.75, Euclid 0.880 → 0.879, linear 0.856 → 0.849; all verdicts unchanged",
+     "§147"
+    ],
+    [
+     "7",
+     "Ring-kernel coupling direction and quantity (text and Fig. 3a)",
+     "the EPG→Δ7 coupling “reverses its preferred phase” (male −6.11; female +3.95)",
+     "the Δ7→EPG coupling’s fitted amplitude reverses sign (male −6.13; female +3.95); Fig. 3a direction labels re-indexed to the stored [postsynaptic, presynaptic] convention",
+     "correlations re-computed on post-refinement parameters: nine-amplitude r 0.985 → 0.984, Δ7-included r = 0.69 unchanged (transpose-invariant); the dimorphism candidate now names the measured direction and quantity",
+     "§148"
+    ],
+    [
+     "8",
+     "Scope of the ring-dynamics claim",
+     "“retains the ring attractor’s bump dynamics” (unscoped)",
+     "claim scoped to the equivalent-kernel rate-model readout with MRA values reported (Note 7)",
+     "wording only; no number changed; instance-level full-circuit caveat documented in Note 7",
+     "§148"
+    ]
+   ]
+  }
+ ],
+ "refs": []
+}
