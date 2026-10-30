@@ -1,0 +1,12 @@
+{
+  "title": "The wiring program of a fly brain — accompanying code",
+  "description": "Complete single-purpose analysis pipeline (194 scripts), paper build chain, registry ledger results and machine-readable logs accompanying the manuscript 'The wiring program of a fly brain'. Every number reported in the paper and its Supplementary Information can be regenerated end-to-end from the three public connectomes (MaleCNS v1.0, FlyWire FAFB v783, hemibrain v1.2) with this pipeline.",
+  "creators": [
+    {"name": "Xun, Xining", "affiliation": "Tsingjiao Information Science (Beijing) Co., Ltd., Beijing, China", "orcid": "0009-0001-8492-4758"},
+    {"name": "Fan, Hang", "affiliation": "School of Economics and Management, North China Electric Power University, China", "orcid": "0000-0002-8308-9332"},
+    {"name": "Hao, Tianyi", "affiliation": "Tsingjiao Information Science (Beijing) Co., Ltd., Beijing, China"}
+  ],
+  "upload_type": "software",
+  "keywords": ["connectomics", "Drosophila", "generative model", "wiring program", "pre-registered falsification"],
+  "access_right": "open"
+}
